@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
-export default function LoginForm(props) {
-  const [username, setUsername] = useState('')
+export default function SignupForm(props) {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [usernameError, setUsernameError] = useState(false)
+  const [emailError, setUsernameError] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
 
   const passwordInput = useRef(null)
@@ -13,16 +13,16 @@ export default function LoginForm(props) {
     passwordInput.current.focus()
   }
 
-  function validateLogin() {
-    if (!username.length) {
+  function validateSignup() {
+    if (!email.length) {
       setUsernameError(true)
     }
     if (!password.length) {
       setPasswordError(true)
     }
 
-    if (usernameError === false && passwordError === false) {
-      props.realmLogin(username, password)
+    if (emailError === false && passwordError === false) {
+      props.createUser(email, password)
     }
   }
 
@@ -30,15 +30,15 @@ export default function LoginForm(props) {
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Email or username"
+          placeholder="Email"
           placeholderTextColor="rgba(44,44,44,0.4)"
           returnKeyType="next"
           onSubmitEditing={onSubmitEditingUsername}
-          style={[styles.input, usernameError && styles.inputError]}
+          style={[styles.input, emailError && styles.inputError]}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          onChangeText={text => setUsername(text.trim())}
+          onChangeText={text => setEmail(text.trim())}
         />
         <TextInput
           placeholder="Password"
@@ -53,16 +53,16 @@ export default function LoginForm(props) {
         />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={validateLogin}>
-          <Text style={styles.button}>LOG IN</Text>
+        <TouchableOpacity onPress={validateSignup}>
+          <Text style={styles.button}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </View>
   )
 }
 
-LoginForm.propTypes = {
-  realmLogin: PropTypes.func.isRequired,
+SignupForm.propTypes = {
+  createUser: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({

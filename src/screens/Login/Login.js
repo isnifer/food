@@ -1,15 +1,5 @@
 import React, { useState } from 'react'
-import {
-  View,
-  Text,
-  Button,
-  Modal,
-  Alert,
-  Image,
-  TouchableHighlight,
-  KeyboardAvoidingView,
-  StyleSheet,
-} from 'react-native'
+import { View, Alert, Image, StatusBar, KeyboardAvoidingView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import Auth0 from 'react-native-auth0'
 import LoginForm from './LoginForm'
@@ -17,12 +7,16 @@ import SignupForm from './SignupForm'
 import authCredentials from '../../auth0-credentials'
 
 const auth0 = new Auth0(authCredentials)
+const pictureURI = [
+  'https://images.unsplash.com/photo-1546548970-71785318a17b?ixlib=rb-1.2.1',
+  'ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80',
+].join('&')
 
-export default function LoginModal(props) {
+export default function Login(props) {
   async function onSuccess(credentials) {
     try {
       const profile = await auth0.auth.userInfo({ token: credentials.accessToken })
-      props.onAuth(credentials, profile)
+      props.navigation.navigate('Profile', { credentials, profile })
     } catch ({ json }) {
       alert('Error', json.error_description)
     }
@@ -77,76 +71,59 @@ export default function LoginModal(props) {
 
   let form = null
   if (viewLogin) {
-    form = <LoginForm realmLogin={realmLogin} />
+    form = <LoginForm realmLogin={realmLogin} switchToSignUp={() => setViewLogin(false)} />
   } else {
-    form = <SignupForm createUser={createUser} />
+    form = <SignupForm createUser={createUser} switchToLogin={() => setViewLogin(true)} />
   }
 
+  // <View style={styles.headerContainer}>
+  // <View style={styles.socialContainer}>
+  //   <TouchableHighlight onPress={() => webAuth('google-oauth2')}>
+  //     <Image style={styles.socialIcon} source={require('./images/google.png')} />
+  //   </TouchableHighlight>
+  // </View>
+
   return (
-    <Modal animationType="slide" transparent={false} visible={props.modalVisible}>
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Image style={styles.logo} source={require('./images/logo.png')} />
-          <Text style={styles.title}>Auth0</Text>
-        </View>
-        <View style={styles.tabContainer}>
-          <Button onPress={() => setViewLogin(true)} title="Log In" />
-          <Button onPress={() => setViewLogin(false)} title="Sign up" />
-        </View>
-        <View style={styles.socialContainer}>
-          <TouchableHighlight onPress={() => webAuth('facebook')}>
-            <Image style={styles.socialIcon} source={require('./images/facebook.png')} />
-          </TouchableHighlight>
-          <TouchableHighlight onPress={() => webAuth('google-oauth2')}>
-            <Image style={styles.socialIcon} source={require('./images/google.png')} />
-          </TouchableHighlight>
-        </View>
-        <View style={styles.formContainer}>{form}</View>
-      </KeyboardAvoidingView>
-    </Modal>
+    <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <StatusBar hidden />
+      <View style={styles.photos}>
+        <Image style={styles.photo} source={{ uri: pictureURI }} />
+      </View>
+      <View style={styles.formContainer}>{form}</View>
+    </KeyboardAvoidingView>
   )
 }
 
-LoginModal.propTypes = {
-  modalVisible: PropTypes.bool.isRequired,
-  onAuth: PropTypes.func.isRequired,
+Login.propTypes = {
+  navigation: PropTypes.object.isRequired,
+}
+
+Login.navigationOptions = {
+  headerShown: false,
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
+  },
+  photo: {
+    width: '100%',
+    height: 350,
   },
   formContainer: {
     flex: 2,
-  },
-  headerContainer: {
-    flex: 1,
-    marginTop: 20,
-    alignItems: 'center',
-    backgroundColor: '#eeeeee',
-    justifyContent: 'center',
+    marginTop: -15,
+    paddingTop: 33,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   socialContainer: {
     flex: 2,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  tabContainer: {
-    flex: 0.5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    borderRadius: 1,
-    borderWidth: 0.5,
-    borderColor: '#d6d7da',
-  },
-  title: {
-    marginTop: 10,
-    width: 100,
-    textAlign: 'center',
-    fontSize: 16,
   },
   socialIcon: {
     marginTop: 10,

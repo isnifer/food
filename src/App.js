@@ -2,15 +2,17 @@ import React from 'react'
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import Home from './screens/Home'
+import Login from './screens/Login'
 import Profile from './screens/Profile'
 
 const StackNavigator = createStackNavigator(
   {
     Home,
+    Login,
     Profile,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Login',
   }
 )
 

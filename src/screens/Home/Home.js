@@ -1,27 +1,12 @@
-import React, { useState } from 'react'
-import { Button, StyleSheet, View } from 'react-native'
-import PropTypes from 'prop-types'
-import ModalLogin from '../../components/ModalLogin'
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 
-export default function HomeScreen(props) {
-  const [modalVisible, setModalVisible] = useState(false)
-
-  function onAuth(credentials, profile) {
-    setModalVisible(false)
-
-    props.navigation.navigate('Profile', { credentials, profile })
-  }
-
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Button onPress={() => setModalVisible(true)} title="Log In" />
-      <ModalLogin modalVisible={modalVisible} onAuth={onAuth} />
+      <Text>Home Screen</Text>
     </View>
   )
-}
-
-HomeScreen.propTypes = {
-  navigation: PropTypes.object.isRequired,
 }
 
 HomeScreen.navigationOptions = {
