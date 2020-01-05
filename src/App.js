@@ -4,19 +4,19 @@ import { createStackNavigator } from 'react-navigation-stack'
 import Home from './screens/Home'
 import Login from './screens/Login'
 import Profile from './screens/Profile'
-import VerifyPhone from './screens/VerifyPhone'
 import VerificationCode from './screens/VerificationCode'
+import PhoneVerification from './screens/PhoneVerification'
 
 const StackNavigator = createStackNavigator(
   {
     Home,
     Login,
     Profile,
-    VerifyPhone,
     VerificationCode,
+    PhoneVerification,
   },
   {
-    initialRouteName: 'VerifyPhone',
+    initialRouteName: 'PhoneVerification',
   }
 )
 
