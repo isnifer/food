@@ -16,7 +16,7 @@ const StackNavigator = createStackNavigator(
     PhoneVerification,
   },
   {
-    initialRouteName: 'PhoneVerification',
+    initialRouteName: 'Login',
   }
 )
 

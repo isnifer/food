@@ -8,8 +8,8 @@ import authCredentials from '../../auth0-credentials'
 
 const auth0 = new Auth0(authCredentials)
 const pictureURI = [
-  'https://images.unsplash.com/photo-1546548970-71785318a17b?ixlib=rb-1.2.1',
-  'ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80',
+  'https://images.unsplash.com/photo-1532904669358-3f7e745e45ad?ixlib=rb-1.2.1',
+  'auto=format&fit=crop&w=500&q=60',
 ].join('&')
 
 export default function Login(props) {
@@ -90,7 +90,7 @@ export default function Login(props) {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <StatusBar hidden />
+      <StatusBar barStyle="light-content" />
       <View style={styles.photos}>
         <Image style={styles.photo} source={{ uri: pictureURI }} />
       </View>
