@@ -54,7 +54,7 @@ export default function Login(props) {
     }
   }
 
-  async function webAuth(connection) {
+  async function googleLogin(connection = 'google-oauth2') {
     try {
       const credentials = await auth0.webAuth.authorize({
         connection,
@@ -71,17 +71,22 @@ export default function Login(props) {
 
   let form = null
   if (viewLogin) {
-    form = <LoginForm realmLogin={realmLogin} switchToSignUp={() => setViewLogin(false)} />
+    form = (
+      <LoginForm
+        realmLogin={realmLogin}
+        googleLogin={googleLogin}
+        switchToSignUp={() => setViewLogin(false)}
+      />
+    )
   } else {
-    form = <SignupForm createUser={createUser} switchToLogin={() => setViewLogin(true)} />
+    form = (
+      <SignupForm
+        createUser={createUser}
+        googleLogin={googleLogin}
+        switchToLogin={() => setViewLogin(true)}
+      />
+    )
   }
-
-  // <View style={styles.headerContainer}>
-  // <View style={styles.socialContainer}>
-  //   <TouchableHighlight onPress={() => webAuth('google-oauth2')}>
-  //     <Image style={styles.socialIcon} source={require('./images/google.png')} />
-  //   </TouchableHighlight>
-  // </View>
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
