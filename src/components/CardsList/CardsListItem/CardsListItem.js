@@ -40,14 +40,15 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 16,
     paddingLeft: 16,
+    marginTop: 6,
     marginBottom: 16,
+    marginHorizontal: 6,
     backgroundColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     borderRadius: 8,
-    marginHorizontal: 6,
     flexDirection: 'row',
   },
   image: {

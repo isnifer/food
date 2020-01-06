@@ -1,15 +1,19 @@
 import React from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import CardsListItem from './CardsListItem'
 
 export default function CardsList(props) {
+  function handleOpenRestaurant() {}
+
   return (
     <View style={styles.container}>
       <Text style={styles.counter}>122 places</Text>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
         {props.items.map(item => (
-          <CardsListItem key={item.id} item={item} />
+          <TouchableOpacity key={item.id} onPress={handleOpenRestaurant}>
+            <CardsListItem item={item} />
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -30,8 +34,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#000000',
+    marginTop: 6,
   },
   listContainer: {
-    marginTop: 16,
+    marginTop: 10,
   },
 })
