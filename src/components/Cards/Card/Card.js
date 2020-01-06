@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
-import Badge from '@/components/Badge'
+import Rating from '@/components/Rating'
 
 export default function Card(props) {
   return (
@@ -9,14 +9,7 @@ export default function Card(props) {
       <Image source={props.pictureURI} style={styles.image} />
       <Text style={styles.title}>{props.title}</Text>
       <Text style={styles.subtitle}>{props.subtitle}</Text>
-      <View style={styles.infoContainer}>
-        <View style={styles.ratingContainer}>
-          <Image source={require('./images/icon_star.png')} style={styles.iconStar} />
-          <Text style={styles.ratingValue}> 4.9 </Text>
-          <Text style={styles.ratingCount}>(120 ratings)</Text>
-        </View>
-        <Badge title="Free delivery" />
-      </View>
+      <Rating />
     </View>
   )
 }
@@ -52,29 +45,5 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: '#B9BDC5',
     marginTop: 10,
-  },
-  infoContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconStar: {
-    width: 12,
-    height: 11.49,
-  },
-  ratingValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000000',
-  },
-  ratingCount: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#B9BDC5',
   },
 })

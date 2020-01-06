@@ -6,6 +6,7 @@ import { createStackNavigator } from 'react-navigation-stack'
 import Home from './screens/Home'
 import Profile from './screens/Profile'
 import Discover from './screens/Discover'
+import Restaurants from './screens/Restaurants'
 
 // AuthStack
 import Login from './screens/Login'
@@ -25,8 +26,9 @@ const AppStack = createStackNavigator(
     Home,
     Profile,
     Discover,
+    Restaurants,
   },
-  { initialRouteName: 'Discover' }
+  { initialRouteName: 'Restaurants' }
 )
 
 const StackNavigator = createSwitchNavigator(
