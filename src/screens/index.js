@@ -6,6 +6,7 @@ import Home from './Home'
 import Profile from './Profile'
 import Restaurants from './Restaurants'
 import RestaurantDetails from './RestaurantDetails'
+import Checkout from './Checkout'
 
 // AuthStack
 import Login from './Login'
@@ -26,6 +27,7 @@ const AppStack = createStackNavigator(
     Profile,
     Restaurants,
     RestaurantDetails,
+    Checkout,
   },
   { initialRouteName: 'RestaurantDetails' }
 )
