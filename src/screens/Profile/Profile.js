@@ -1,34 +1,27 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Button, Image, StyleSheet, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
-export default class ProfileScreen extends Component {
-  static propTypes = {
-    navigation: PropTypes.object.isRequired,
-  }
+export default function ProfileScreen({ navigation: { state } }) {
+  const { profile } = state.params
 
-  constructor(props) {
-    super(props)
-
-    this.credentials = props.navigation.state.params.credentials
-    this.profile = props.navigation.state.params.profile
-  }
-
-  static navigationOptions = ({ navigation }) => ({
-    title: 'Profile',
-    headerLeft: () => <Button title="Logout" onPress={() => navigation.navigate('Home')} />,
-  })
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.header}>Welcome {this.profile.name}</Text>
-        <Image source={{ uri: this.profile.picture }} style={{ width: 100, height: 100 }} />
-        <Text>{JSON.stringify(this.profile, null, 2)}</Text>
-      </View>
-    )
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Welcome {profile.name}</Text>
+      <Image source={{ uri: profile.picture }} style={{ width: 100, height: 100 }} />
+      <Text>{JSON.stringify(profile, null, 2)}</Text>
+    </View>
+  )
 }
+
+ProfileScreen.propTypes = {
+  navigation: PropTypes.object.isRequired,
+}
+
+ProfileScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Profile',
+  headerLeft: () => <Button title="Logout" onPress={() => navigation.navigate('Home')} />,
+})
 
 const styles = StyleSheet.create({
   container: {
