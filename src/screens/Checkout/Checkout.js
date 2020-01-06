@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 // import PropTypes from 'prop-types'
+import ModalOrderStatus from './ModalOrderStatus'
 
 const addresses = [
   { id: 1, title: 'HOME ADDRESS', address: '214 Levent\\Besiktas Apt.002' },
@@ -19,6 +20,7 @@ const iconChecked = require('@/components/MenuList/MenuListItem/MenuListProduct/
 export default function Checkout() {
   const [selectedAddress, setAddress] = useState(1)
   const [selectedPaymentMethod, setPaymentMethod] = useState('visa')
+  const [isModalVisible, setModalVisibility] = useState(false)
 
   function handlePressAddress(id) {
     setAddress(id === selectedAddress ? null : id)
@@ -28,7 +30,9 @@ export default function Checkout() {
     setPaymentMethod(id === selectedPaymentMethod ? null : id)
   }
 
-  function handlePressPayment() {}
+  function handlePressPayment() {
+    setModalVisibility(true)
+  }
 
   return (
     <View style={styles.container}>
@@ -81,6 +85,7 @@ export default function Checkout() {
         <Image source={require('./images/fingerprint.png')} />
         <Text style={styles.touchIdTitle}>Pay with Touch ID</Text>
       </View>
+      <ModalOrderStatus isVisible={isModalVisible} hideModal={() => setModalVisibility(false)} />
     </View>
   )
 }
