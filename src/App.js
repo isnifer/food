@@ -5,7 +5,6 @@ import { createStackNavigator } from 'react-navigation-stack'
 // AppStack
 import Home from './screens/Home'
 import Profile from './screens/Profile'
-import Discover from './screens/Discover'
 import Restaurants from './screens/Restaurants'
 
 // AuthStack
@@ -25,7 +24,6 @@ const AppStack = createStackNavigator(
   {
     Home,
     Profile,
-    Discover,
     Restaurants,
   },
   { initialRouteName: 'Restaurants' }

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
     marginTop: 6,
+    marginLeft: 6,
   },
   listContainer: {
     marginTop: 10,
