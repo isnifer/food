@@ -1,23 +1,42 @@
 import React from 'react'
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
+
+// AppStack
 import Home from './screens/Home'
-import Login from './screens/Login'
 import Profile from './screens/Profile'
+import Discover from './screens/Discover'
+
+// AuthStack
+import Login from './screens/Login'
 import VerificationCode from './screens/VerificationCode'
 import PhoneVerification from './screens/PhoneVerification'
 
-const StackNavigator = createStackNavigator(
+const AuthStack = createStackNavigator(
   {
-    Home,
     Login,
-    Profile,
     VerificationCode,
     PhoneVerification,
   },
+  { initialRouteName: 'Login' }
+)
+const AppStack = createStackNavigator(
   {
-    initialRouteName: 'Login',
-  }
+    Home,
+    Profile,
+    Discover,
+  },
+  { initialRouteName: 'Discover' }
+)
+
+const StackNavigator = createSwitchNavigator(
+  {
+    // implement this https://reactnavigation.org/docs/en/auth-flow.html
+    // AuthLoading: AuthLoadingScreen,
+    App: AppStack,
+    Auth: AuthStack,
+  },
+  { initialRouteName: 'App' }
 )
 
 const AppContainer = createAppContainer(StackNavigator)
