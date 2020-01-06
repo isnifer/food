@@ -29,7 +29,7 @@ const AppStack = createStackNavigator(
     RestaurantDetails,
     Checkout,
   },
-  { initialRouteName: 'RestaurantDetails' }
+  { initialRouteName: 'Checkout' }
 )
 
 const StackNavigator = createSwitchNavigator(
