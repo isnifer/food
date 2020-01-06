@@ -4,8 +4,10 @@ import PropTypes from 'prop-types'
 
 export default function Badge(props) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{props.title}</Text>
+    <View style={styles.root}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{props.title}</Text>
+      </View>
     </View>
   )
 }
@@ -15,6 +17,9 @@ Badge.propTypes = {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flexDirection: 'row',
+  },
   container: {
     backgroundColor: '#F93963',
     borderRadius: 10,
