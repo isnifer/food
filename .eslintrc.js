@@ -11,4 +11,7 @@ module.exports = {
     afterAll: false,
     afterEach: false,
   },
+  rules: {
+    'consistent-return': 'off',
+  },
 }

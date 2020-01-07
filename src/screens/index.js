@@ -29,7 +29,7 @@ const AppStack = createStackNavigator(
     RestaurantDetails,
     Checkout,
   },
-  { initialRouteName: 'Checkout' }
+  { initialRouteName: 'Home' }
 )
 
 const StackNavigator = createSwitchNavigator(
@@ -39,7 +39,7 @@ const StackNavigator = createSwitchNavigator(
     App: AppStack,
     Auth: AuthStack,
   },
-  { initialRouteName: 'App' }
+  { initialRouteName: 'Auth' }
 )
 
 export default createAppContainer(StackNavigator)

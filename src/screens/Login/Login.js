@@ -1,29 +1,80 @@
-import React, { useState } from 'react'
-import { View, Alert, Image, StatusBar, KeyboardAvoidingView, StyleSheet } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import {
+  View,
+  Alert,
+  Image,
+  StatusBar,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  StyleSheet,
+} from 'react-native'
 import PropTypes from 'prop-types'
 import Auth0 from 'react-native-auth0'
+import { getGenericPassword, setGenericPassword } from 'react-native-keychain'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
 import authCredentials from '../../auth0-credentials'
 
 const auth0 = new Auth0(authCredentials)
-const pictureURI = [
-  'https://images.unsplash.com/photo-1532904669358-3f7e745e45ad?ixlib=rb-1.2.1',
-  'auto=format&fit=crop&w=500&q=60',
-].join('&')
 
 export default function Login(props) {
+  async function updateCredentials({ idToken, accessToken, refreshToken }) {
+    const { updatedAt } = await auth0.auth.userInfo({ token: accessToken })
+
+    return setGenericPassword(idToken, JSON.stringify({ accessToken, refreshToken, updatedAt }))
+  }
+
   async function onSuccess(credentials) {
-    try {
-      const profile = await auth0.auth.userInfo({ token: credentials.accessToken })
-      props.navigation.navigate('Profile', { credentials, profile })
-    } catch ({ json }) {
-      alert('Error', json.error_description)
-    }
+    // Store the session idToken
+    await updateCredentials(credentials)
+
+    props.navigation.navigate('Home')
   }
 
   function alert(title, message) {
     return Alert.alert(title, message, [{ text: 'OK' }], { cancelable: false })
+  }
+
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        // Gettings current securely stored credentials
+        const credentials = await getGenericPassword()
+        const { updatedAt, refreshToken } = JSON.parse(credentials.password)
+
+        if (!updatedAt || !refreshToken) {
+          return setIsInitialLoading(false)
+        }
+
+        // Checking last updated time
+        const updatedAtSeconds = Math.round(new Date(updatedAt).getTime() / 1000)
+        const nowSeconds = Math.round(new Date().getTime() / 1000)
+
+        // If last updated time more than token expiration time — refreshToken
+        if (nowSeconds - updatedAtSeconds > 60) {
+          const freshCredentials = await auth0.auth.refreshToken({ refreshToken })
+
+          onSuccess(Object.assign(freshCredentials, { refreshToken }))
+        } else {
+          props.navigation.navigate('Home')
+        }
+      } catch (error) {
+        // XXX: THINK ABOUT IT
+        alert('Error', JSON.stringify(error, null, 2))
+        setIsInitialLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  if (isInitialLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center' }}>
+        <ActivityIndicator animating size="large" />
+      </View>
+    )
   }
 
   async function realmLogin(username, password) {
@@ -32,7 +83,7 @@ export default function Login(props) {
         username,
         password,
         realm: 'Username-Password-Authentication',
-        scope: 'openid profile email',
+        scope: 'openid profile email offline_access',
         audience: `https://${authCredentials.domain}/userinfo`,
       })
       await onSuccess(credentials)
@@ -58,7 +109,7 @@ export default function Login(props) {
     try {
       const credentials = await auth0.webAuth.authorize({
         connection,
-        scope: 'openid profile email',
+        scope: 'openid profile email offline_access',
         audience: `https://${authCredentials.domain}/userinfo`,
       })
       await onSuccess(credentials)
@@ -92,7 +143,7 @@ export default function Login(props) {
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
       <StatusBar barStyle="light-content" />
       <View style={styles.photos}>
-        <Image style={styles.photo} source={{ uri: pictureURI }} />
+        <Image style={styles.photo} source={require('./images/login_photo.jpg')} />
       </View>
       <View style={styles.formContainer}>{form}</View>
     </KeyboardAvoidingView>

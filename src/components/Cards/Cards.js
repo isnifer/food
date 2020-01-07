@@ -7,14 +7,8 @@ export default function Cards(props) {
   return (
     <View style={styles.container}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {props.items.map(({ url, title, subtitle }, index) => (
-          <Card
-            key={url}
-            pictureURI={{ uri: url }}
-            title={title}
-            subtitle={subtitle}
-            isFirst={index === 0}
-          />
+        {props.items.map((item, index) => (
+          <Card key={item.id} item={item} isFirst={index === 0} />
         ))}
       </ScrollView>
     </View>

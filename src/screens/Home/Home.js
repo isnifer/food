@@ -8,17 +8,42 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native'
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 import Cards from '@/components/Cards'
 import Categories from '@/components/Categories'
-import pictures from './pictures.json'
 import categories from './categories'
 
-export default function Discover() {
-  const [search, setSearch] = useState('')
+const FEATURED_PLACES = gql`
+  {
+    places(order_by: { id: asc }, limit: 5) {
+      id
+      name
+      address
+      photo
+    }
+  }
+`
+
+export default function Home() {
+  const places = useQuery(FEATURED_PLACES)
+  const [search, setSearch] = useState('') // eslint-disable-line
 
   function onSubmitEditingSearch() {}
-
   function handleShowFilters() {}
+
+  // eslint-disable-next-line
+  function renderPlaces({ loading, error, data }) {
+    if (loading) {
+      return <Text>Loading...</Text>
+    }
+
+    if (error) {
+      return <Text>{JSON.stringify(error, null, 2)}</Text>
+    }
+
+    return <Cards items={data.places} />
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,13 +64,13 @@ export default function Discover() {
         </TouchableOpacity>
       </View>
       <Text style={styles.title}>Discovery new places</Text>
-      <Cards items={pictures} />
+      {renderPlaces(places)}
       <Categories items={categories} />
     </SafeAreaView>
   )
 }
 
-Discover.navigationOptions = {
+Home.navigationOptions = {
   headerShown: false,
 }
 

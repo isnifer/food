@@ -3,21 +3,21 @@ import { View, Image, Text, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import Rating from '@/components/Rating'
 
-export default function Card(props) {
+export default function Card({ item, isFirst }) {
+  const { name, address, photo } = item
+
   return (
-    <View style={[styles.container, props.isFirst && styles.containerFirst]}>
-      <Image source={props.pictureURI} style={styles.image} />
-      <Text style={styles.title}>{props.title}</Text>
-      <Text style={styles.subtitle}>{props.subtitle}</Text>
+    <View style={[styles.container, isFirst && styles.containerFirst]}>
+      <Image source={{ uri: photo }} style={styles.image} />
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.address}>{address}</Text>
       <Rating />
     </View>
   )
 }
 
 Card.propTypes = {
-  pictureURI: PropTypes.any.isRequired,
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
+  item: PropTypes.object.isRequired,
   isFirst: PropTypes.bool.isRequired,
 }
 
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 6,
   },
-  title: {
+  name: {
     fontSize: 18,
     fontWeight: '900',
     color: '#26315F',
     marginTop: 16,
   },
-  subtitle: {
+  address: {
     fontSize: 14,
     fontWeight: '300',
     color: '#B9BDC5',
