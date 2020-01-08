@@ -2,15 +2,39 @@ import React from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 
-export default function Category({ category, isFirst }) {
-  const { icon, title, places, width, height } = category
+const categoryIcons = {
+  Pizza: {
+    icon: require('./images/pizza.png'),
+    width: 44,
+    height: 44,
+  },
+  Burgers: {
+    icon: require('./images/hamburger.png'),
+    width: 44,
+    height: 36,
+  },
+  Steak: {
+    icon: require('./images/meat.png'),
+    width: 44,
+    height: 35,
+  },
+  Pasta: {
+    icon: require('./images/spaguetti.png'),
+    width: 44,
+    height: 44,
+  },
+}
+
+export default function Category({ category: { name, ...category }, isFirst }) {
+  const { icon, width, height } = categoryIcons[name]
+  const places = category.places_aggregate.aggregate.count
 
   return (
     <View style={[styles.container, isFirst && styles.containerFirst]}>
       <View style={styles.imageContainer}>
         <Image source={icon} style={{ width, height }} />
       </View>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.name}>{name}</Text>
       <Text style={styles.subtitle}>{places} places</Text>
     </View>
   )
@@ -45,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
+  name: {
     fontSize: 18,
     fontWeight: '500',
     color: '#26315F',

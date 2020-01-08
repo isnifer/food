@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ImageBackground, StatusBar, StyleSheet } from 'react-native'
 import CardsList from '@/components/CardsList'
-import pictures from '@/screens/Home/pictures.json'
+import pictures from './pictures.json'
 
 const uri = [
   'https://images.unsplash.com/photo-1542528406-f04308dcf0a1?ixlib=rb-1.2.1',

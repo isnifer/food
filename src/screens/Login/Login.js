@@ -18,24 +18,9 @@ import authCredentials from '../../auth0-credentials'
 const auth0 = new Auth0(authCredentials)
 
 export default function Login(props) {
-  async function updateCredentials({ idToken, accessToken, refreshToken }) {
-    const { updatedAt } = await auth0.auth.userInfo({ token: accessToken })
-
-    return setGenericPassword(idToken, JSON.stringify({ accessToken, refreshToken, updatedAt }))
-  }
-
-  async function onSuccess(credentials) {
-    // Store the session idToken
-    await updateCredentials(credentials)
-
-    props.navigation.navigate('Home')
-  }
-
-  function alert(title, message) {
-    return Alert.alert(title, message, [{ text: 'OK' }], { cancelable: false })
-  }
-
+  const [viewLogin, setViewLogin] = useState(true)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+
   useEffect(() => {
     async function checkAuth() {
       try {
@@ -46,6 +31,8 @@ export default function Login(props) {
         if (!updatedAt || !refreshToken) {
           return setIsInitialLoading(false)
         }
+
+        console.log(credentials)
 
         // Checking last updated time
         const updatedAtSeconds = Math.round(new Date(updatedAt).getTime() / 1000)
@@ -68,6 +55,23 @@ export default function Login(props) {
 
     checkAuth()
   }, [])
+
+  async function updateCredentials({ idToken, accessToken, refreshToken }) {
+    const { updatedAt } = await auth0.auth.userInfo({ token: accessToken })
+
+    return setGenericPassword(idToken, JSON.stringify({ accessToken, refreshToken, updatedAt }))
+  }
+
+  async function onSuccess(credentials) {
+    // Store the session idToken
+    await updateCredentials(credentials)
+
+    props.navigation.navigate('Home')
+  }
+
+  function alert(title, message) {
+    return Alert.alert(title, message, [{ text: 'OK' }], { cancelable: false })
+  }
 
   if (isInitialLoading) {
     return (
@@ -117,8 +121,6 @@ export default function Login(props) {
       alert('Error', error.error_description)
     }
   }
-
-  const [viewLogin, setViewLogin] = useState(true)
 
   let form = null
   if (viewLogin) {

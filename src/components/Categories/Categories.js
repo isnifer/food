@@ -19,7 +19,7 @@ export default function Categories(props) {
         showsHorizontalScrollIndicator={false}
         style={styles.categoriesContainer}>
         {props.items.map((category, index) => (
-          <Category key={category.icon} category={category} isFirst={index === 0} />
+          <Category key={category.id} category={category} isFirst={index === 0} />
         ))}
       </ScrollView>
     </View>
@@ -31,9 +31,6 @@ Categories.propTypes = {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 32,
-  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
