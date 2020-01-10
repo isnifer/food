@@ -13,7 +13,7 @@ import {
 import { useQuery, gql } from '@apollo/client'
 import Cards from '@/components/Cards'
 import Categories from '@/components/Categories'
-import Filters from '@/components/Filters'
+import ModalFilters from '@/components/ModalFilters'
 
 const FEATURED_PLACES = gql`
   {
@@ -97,7 +97,7 @@ export default function Discover() {
         {renderPlaces(places)}
         <View style={styles.categories}>{renderCategories(categories)}</View>
       </ScrollView>
-      <Filters isVisible={isFiltersVisible} toggle={() => setFiltersVisibility(false)} />
+      <ModalFilters isVisible={isFiltersVisible} toggle={() => setFiltersVisibility(false)} />
     </SafeAreaView>
   )
 }
