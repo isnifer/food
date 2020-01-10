@@ -10,10 +10,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native'
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import { useQuery, gql } from '@apollo/client'
 import Cards from '@/components/Cards'
 import Categories from '@/components/Categories'
+import Filters from '@/components/Filters'
 
 const FEATURED_PLACES = gql`
   {
@@ -39,13 +39,13 @@ const TOP_CATEGORIES = gql`
   }
 `
 
-export default function Home() {
+export default function Discover() {
   const places = useQuery(FEATURED_PLACES)
   const categories = useQuery(TOP_CATEGORIES)
   const [search, setSearch] = useState('') // eslint-disable-line
+  const [isFiltersVisible, setFiltersVisibility] = useState(false) // eslint-disable-line
 
   function onSubmitEditingSearch() {}
-  function handleShowFilters() {}
 
   // eslint-disable-next-line
   function renderPlaces({ loading, error, data }) {
@@ -75,34 +75,31 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search"
+          placeholderTextColor="rgba(44,44,44,0.4)"
+          returnKeyType="next"
+          onSubmitEditing={onSubmitEditingSearch}
+          style={styles.input}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={text => setSearch(text.trim())}
+        />
+        <TouchableOpacity onPress={() => setFiltersVisibility(true)}>
+          <Image source={require('./images/icon_filter.png')} style={styles.iconFilter} />
+        </TouchableOpacity>
+      </View>
       <ScrollView>
-        <StatusBar barStyle="dark-content" />
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Search"
-            placeholderTextColor="rgba(44,44,44,0.4)"
-            returnKeyType="next"
-            onSubmitEditing={onSubmitEditingSearch}
-            style={styles.input}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={text => setSearch(text.trim())}
-          />
-          <TouchableOpacity onPress={handleShowFilters}>
-            <Image source={require('./images/icon_filter.png')} style={styles.iconFilter} />
-          </TouchableOpacity>
-        </View>
         <Text style={styles.title}>Discovery new places</Text>
         {renderPlaces(places)}
         <View style={styles.categories}>{renderCategories(categories)}</View>
       </ScrollView>
+      <Filters isVisible={isFiltersVisible} toggle={() => setFiltersVisibility(false)} />
     </SafeAreaView>
   )
-}
-
-Home.navigationOptions = {
-  headerShown: false,
 }
 
 const styles = StyleSheet.create({

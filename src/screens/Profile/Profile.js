@@ -1,26 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Image, StyleSheet, Text, View } from 'react-native'
-import PropTypes from 'prop-types'
+import { getProfileInfo } from '@/utils/manageProfileInfo'
 
-export default function ProfileScreen({ navigation: { state } }) {
-  const { profile } = state.params
+export default function ProfileScreen() {
+  const [profile, setProfile] = useState({})
+
+  useEffect(() => {
+    getProfileInfo().then(setProfile)
+  }, [])
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Welcome {profile.name}</Text>
       <Image source={{ uri: profile.picture }} style={{ width: 100, height: 100 }} />
-      <Text>{JSON.stringify(profile, null, 2)}</Text>
     </View>
   )
 }
 
-ProfileScreen.propTypes = {
-  navigation: PropTypes.object.isRequired,
-}
-
 ProfileScreen.navigationOptions = ({ navigation }) => ({
   title: 'Profile',
-  headerLeft: () => <Button title="Logout" onPress={() => navigation.navigate('Home')} />,
+  headerLeft: () => <Button title="Logout" onPress={() => navigation.navigate('Login')} />,
 })
 
 const styles = StyleSheet.create({

@@ -11,9 +11,10 @@ import {
 import PropTypes from 'prop-types'
 import Auth0 from 'react-native-auth0'
 import { getGenericPassword, setGenericPassword } from 'react-native-keychain'
+import authCredentials from '@/auth0-credentials'
+import { setProfileInfo } from '@/utils/manageProfileInfo'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
-import authCredentials from '../../auth0-credentials'
 
 const auth0 = new Auth0(authCredentials)
 
@@ -32,8 +33,6 @@ export default function Login(props) {
           return setIsInitialLoading(false)
         }
 
-        console.log(credentials)
-
         // Checking last updated time
         const updatedAtSeconds = Math.round(new Date(updatedAt).getTime() / 1000)
         const nowSeconds = Math.round(new Date().getTime() / 1000)
@@ -44,7 +43,7 @@ export default function Login(props) {
 
           onSuccess(Object.assign(freshCredentials, { refreshToken }))
         } else {
-          props.navigation.navigate('Home')
+          props.navigation.navigate('App')
         }
       } catch (error) {
         // XXX: THINK ABOUT IT
@@ -57,7 +56,12 @@ export default function Login(props) {
   }, [])
 
   async function updateCredentials({ idToken, accessToken, refreshToken }) {
-    const { updatedAt } = await auth0.auth.userInfo({ token: accessToken })
+    const { updatedAt, ...userInfo } = await auth0.auth.userInfo({ token: accessToken })
+    await setProfileInfo({
+      email: userInfo.name,
+      name: userInfo.nickname,
+      picture: userInfo.picture,
+    })
 
     return setGenericPassword(idToken, JSON.stringify({ accessToken, refreshToken, updatedAt }))
   }
@@ -66,7 +70,7 @@ export default function Login(props) {
     // Store the session idToken
     await updateCredentials(credentials)
 
-    props.navigation.navigate('Home')
+    props.navigation.navigate('App')
   }
 
   function alert(title, message) {
