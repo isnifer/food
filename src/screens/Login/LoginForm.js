@@ -22,14 +22,16 @@ export default function LoginForm(props) {
     }
 
     if (emailError === false && passwordError === false) {
-      props.realmLogin(email, password)
+      return props.isLogin ? props.realmLogin(email, password) : props.createUser(email, password)
     }
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>Login to your account</Text>
+      <Text style={styles.title}>{props.isLogin ? 'Welcome back' : 'Hello there'}</Text>
+      <Text style={styles.subtitle}>
+        {props.isLogin ? 'Login to your account' : 'Create an account'}
+      </Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
@@ -54,13 +56,23 @@ export default function LoginForm(props) {
           onChangeText={text => setPassword(text.trim())}
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={validateLogin}>
-          <Text style={styles.buttonTitle}>Login</Text>
+          <Text style={styles.buttonTitle}>{props.isLogin ? 'Login' : 'Sign up'}</Text>
         </TouchableOpacity>
         <Text style={styles.forgotPassword}>Forgot your password?</Text>
         <View style={styles.signupBlock}>
-          <Text style={styles.signupText}>Don{"'"}t have an account? </Text>
-          <TouchableOpacity style={styles.signupButton} onPress={props.switchToSignUp}>
-            <Text style={styles.signupButtonTitle}>Sign up</Text>
+          <Text style={styles.signupText}>
+            {props.isLogin ? `Don${"'"}t have an account? ` : 'Already have an account? '}
+          </Text>
+          <TouchableOpacity
+            style={styles.signupButton}
+            onPress={() => props.switchToLogin(state => !state)}>
+            <Text style={styles.signupButtonTitle}>{props.isLogin ? 'Sign up' : 'Login'}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.googleBlock}>
+          <Text style={styles.signupText}>Or login with </Text>
+          <TouchableOpacity style={styles.signupButton} onPress={props.googleLogin}>
+            <Text style={styles.signupButtonTitle}>Google</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -69,8 +81,11 @@ export default function LoginForm(props) {
 }
 
 LoginForm.propTypes = {
+  isLogin: PropTypes.bool.isRequired,
+  googleLogin: PropTypes.func.isRequired,
+  createUser: PropTypes.func.isRequired,
   realmLogin: PropTypes.func.isRequired,
-  switchToSignUp: PropTypes.func.isRequired,
+  switchToLogin: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -133,7 +148,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 45,
+    marginTop: 30,
+  },
+  googleBlock: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
   signupText: {
     fontSize: 18,

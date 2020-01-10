@@ -14,12 +14,11 @@ import { getGenericPassword, setGenericPassword } from 'react-native-keychain'
 import authCredentials from '@/auth0-credentials'
 import { setProfileInfo } from '@/utils/manageProfileInfo'
 import LoginForm from './LoginForm'
-import SignupForm from './SignupForm'
 
 const auth0 = new Auth0(authCredentials)
 
 export default function Login(props) {
-  const [viewLogin, setViewLogin] = useState(true)
+  const [isLogin, setFormState] = useState(true)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
@@ -107,7 +106,7 @@ export default function Login(props) {
         password,
         connection: 'Username-Password-Authentication',
       })
-      alert('Success', 'New user created')
+      await realmLogin(email, password)
     } catch ({ json }) {
       alert('Error', json.description)
     }
@@ -126,32 +125,21 @@ export default function Login(props) {
     }
   }
 
-  let form = null
-  if (viewLogin) {
-    form = (
-      <LoginForm
-        realmLogin={realmLogin}
-        googleLogin={googleLogin}
-        switchToSignUp={() => setViewLogin(false)}
-      />
-    )
-  } else {
-    form = (
-      <SignupForm
-        createUser={createUser}
-        googleLogin={googleLogin}
-        switchToLogin={() => setViewLogin(true)}
-      />
-    )
-  }
-
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
       <StatusBar barStyle="light-content" />
       <View style={styles.photos}>
         <Image style={styles.photo} source={require('./images/login_photo.jpg')} />
       </View>
-      <View style={styles.formContainer}>{form}</View>
+      <View style={styles.formContainer}>
+        <LoginForm
+          isLogin={isLogin}
+          realmLogin={realmLogin}
+          googleLogin={googleLogin}
+          createUser={createUser}
+          switchToLogin={setFormState}
+        />
+      </View>
     </KeyboardAvoidingView>
   )
 }

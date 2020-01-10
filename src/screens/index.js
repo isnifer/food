@@ -39,7 +39,7 @@ const icons = {
 
 const TabNavigator = createBottomTabNavigator(
   {
-    Discover: Discover,
+    Discover,
     Order,
     Favorites,
     Profile,
