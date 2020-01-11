@@ -63,7 +63,7 @@ Restaurants.propTypes = {
 }
 
 Restaurants.navigationOptions = {
-  headerShown: false,
+  headerTransparent: true,
 }
 
 const styles = StyleSheet.create({

@@ -3,12 +3,12 @@ import { View, Image, Text, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 
 export default function Product({ item }) {
-  const { title, price, url } = item
+  const { name, price, photo } = item
 
   return (
     <View style={[styles.container]}>
-      <Image source={{ uri: url }} style={styles.image} />
-      <Text style={styles.title}>{title}</Text>
+      <Image source={{ uri: photo }} style={styles.image} />
+      <Text style={styles.name}>{name}</Text>
       <Text style={styles.price}>${price}</Text>
     </View>
   )
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 6,
   },
-  title: {
+  name: {
     fontSize: 18,
     fontWeight: '700',
     color: '#26315F',

@@ -16,7 +16,7 @@ export default function Rating({ rating, count }) {
 }
 
 Rating.propTypes = {
-  rating: PropTypes.number,
+  rating: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   count: PropTypes.number,
 }
 

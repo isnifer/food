@@ -6,54 +6,98 @@ import {
   Image,
   StatusBar,
   ScrollView,
+  ActivityIndicator,
   SafeAreaView,
   StyleSheet,
 } from 'react-native'
 import PropTypes from 'prop-types'
+import { useQuery, gql } from '@apollo/client'
+import { get } from 'lodash'
+import declensionFilter from '@/utils/declensionFilter'
 import Badge from '@/components/Badge'
-import Products from '@/components/Products'
 import MenuList from '@/components/MenuList'
-import FeaturePickup from './FeaturePickup'
-import products from './products.json'
-import categories from './categories.json'
+// import FeaturePickup from './FeaturePickup'
 
-const uri = [
-  'https://images.unsplash.com/photo-1532768907235-78653b7dc71d?ixlib=rb-1.2.1&',
-  'ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80',
-].join('&')
+const RESTAURANT = gql`
+  query Restaurant($id: Int!) {
+    restaurant: places_by_pk(id: $id) {
+      id
+      name
+      photo
+      address
+      delivery {
+        name
+      }
+      ratings: ratings_aggregate {
+        aggregate {
+          count
+          avg {
+            rating
+          }
+        }
+      }
+    }
+  }
+`
 
-export default function RestaurantDetails({ navigation: { state } }) {
-  const { name = 'Cuotro Formaggie Soup', address = '299 Levent\\Besiktas' } = state.params || {}
+export default function RestaurantDetails({ navigation }) {
+  const id = navigation.getParam('id')
+  const { loading, error, data } = useQuery(RESTAURANT, { variables: { id } })
+
+  if (loading) {
+    return (
+      <View>
+        <StatusBar barStyle="light-content" />
+        <ActivityIndicator />
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View>
+        <StatusBar barStyle="light-content" />
+        <ActivityIndicator />
+      </View>
+    )
+  }
+
+  const restaurant = get(data, 'restaurant') || {}
+  const rating = get(restaurant, 'ratings.aggregate.avg.rating') || 0
+  const ratingCount = get(restaurant, 'ratings.aggregate.count')
+  const countText = declensionFilter(ratingCount, { 1: '@ vote', other: '@ votes' })
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ImageBackground source={{ uri }} style={styles.image}>
-        <SafeAreaView>
+      <ImageBackground source={{ uri: restaurant.photo }} style={styles.image}>
+        <SafeAreaView style={styles.photoMask}>
           <View style={styles.safeContainer}>
             <Badge title="Free Delivery" />
-            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.name}>{restaurant.name}</Text>
             <View style={styles.addressContainer}>
               <Image
                 source={require('@/components/CardsList/CardsListItem/images/icon_location.png')}
                 style={styles.iconLocation}
               />
-              <Text style={styles.address}> {address}</Text>
+              <Text style={styles.address}> {restaurant.address}</Text>
             </View>
           </View>
           <View style={styles.statsContainer}>
             <View style={styles.statsRating}>
-              <View style={styles.statsTitle}>
-                <Image
-                  source={require('@/components/Rating/images/icon_star.png')}
-                  style={styles.iconStar}
-                />
-                <Text style={styles.ratingValue}> 4.9</Text>
+              <View style={styles.statsItemContainer}>
+                <View style={styles.statsTitle}>
+                  <Image
+                    source={require('@/components/Rating/images/icon_star.png')}
+                    style={styles.iconStar}
+                  />
+                  <Text style={styles.ratingValue}>{rating ? rating.toPrecision(2) : 0}</Text>
+                </View>
+                <Text style={styles.ratingCount}>{countText}</Text>
               </View>
-              <Text style={styles.ratingCount}>210 ratings</Text>
             </View>
             <View style={styles.statsBookmarks}>
-              <View style={styles.statsBookmarksContainer}>
+              <View style={styles.statsItemContainer}>
                 <View style={styles.statsTitle}>
                   <Image
                     source={require('./images/icon_bookmark.png')}
@@ -61,11 +105,11 @@ export default function RestaurantDetails({ navigation: { state } }) {
                   />
                   <Text style={styles.ratingValue}> 90k</Text>
                 </View>
-                <Text style={styles.ratingCount}>210 ratings</Text>
+                <Text style={styles.ratingCount}>favorites</Text>
               </View>
             </View>
             <View style={styles.statsPhotos}>
-              <View style={styles.statsPhotosContainer}>
+              <View style={styles.statsItemContainer}>
                 <View style={styles.statsTitle}>
                   <Image source={require('./images/icon_photo.png')} style={styles.iconPhoto} />
                   <Text style={styles.ratingValue}> 250</Text>
@@ -76,9 +120,8 @@ export default function RestaurantDetails({ navigation: { state } }) {
           </View>
         </SafeAreaView>
       </ImageBackground>
-      <FeaturePickup />
-      <Products items={products} />
-      <MenuList items={categories} />
+      {/* <FeaturePickup /> */}
+      <MenuList placeId={id} />
     </ScrollView>
   )
 }
@@ -98,18 +141,23 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
+  },
+  photoMask: {
+    flex: 1,
     height: 355,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, .6)',
   },
   safeContainer: {
+    flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-start',
-    paddingTop: 75,
+    justifyContent: 'flex-end',
+    paddingBottom: 32,
     paddingHorizontal: 12,
   },
   name: {
     fontSize: 30,
     color: '#FFFFFF',
-    width: '70%',
   },
   addressContainer: {
     flexDirection: 'row',
@@ -131,9 +179,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 12,
     paddingHorizontal: 5,
-    marginTop: 38,
-    paddingTop: 16,
-    paddingBottom: 10,
+    paddingVertical: 16,
     borderTopWidth: 0.5,
     borderColor: 'rgba(255, 255, 255, 0.6)',
   },
@@ -161,6 +207,7 @@ const styles = StyleSheet.create({
   },
   ratingValue: {
     color: '#FFFFFF',
+    marginLeft: 2,
   },
   ratingCount: {
     color: '#FFFFFF',
@@ -174,11 +221,7 @@ const styles = StyleSheet.create({
   statsPhotos: {
     flex: 1,
   },
-  statsBookmarksContainer: {
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  statsPhotosContainer: {
+  statsItemContainer: {
     marginLeft: 'auto',
     marginRight: 'auto',
   },

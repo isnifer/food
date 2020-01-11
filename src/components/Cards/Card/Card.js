@@ -1,11 +1,13 @@
 import React from 'react'
-import { View, Image, Text, StyleSheet } from 'react-native'
+import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { withNavigation } from 'react-navigation'
 import Badge from '@/components/Badge'
 import Rating from '@/components/Rating'
 
-export default function Card({ item, isFirst }) {
+function Card({ item, isFirst, navigation }) {
   const {
+    id,
     name,
     address,
     photo,
@@ -13,23 +15,34 @@ export default function Card({ item, isFirst }) {
     rating: { aggregate: rating },
   } = item
 
+  function handlePressStore() {
+    navigation.navigate('RestaurantDetails', { id })
+  }
+
+  const stylesContainer = [styles.container, isFirst && styles.containerFirst]
+
   return (
-    <View style={[styles.container, isFirst && styles.containerFirst]}>
+    <TouchableOpacity activeOpacity={0.8} style={stylesContainer} onPress={handlePressStore}>
       <Image source={{ uri: photo }} style={styles.image} />
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.address}>{address}</Text>
       <View style={styles.infoContainer}>
-        {!!rating.count && <Rating rating={rating.avg.rating} count={rating.count} />}
+        {!!rating.count && (
+          <Rating rating={rating.avg.rating.toPrecision(2)} count={rating.count} />
+        )}
         {delivery && <Badge title={delivery.name} />}
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
 Card.propTypes = {
   item: PropTypes.object.isRequired,
   isFirst: PropTypes.bool.isRequired,
+  navigation: PropTypes.object.isRequired,
 }
+
+export default withNavigation(Card)
 
 const styles = StyleSheet.create({
   container: {

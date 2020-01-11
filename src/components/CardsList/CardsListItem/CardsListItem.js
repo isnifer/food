@@ -1,14 +1,19 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { withNavigation } from 'react-navigation'
 import Rating from '@/components/Rating'
 import Spacer from '@/components/Spacer'
 
-export default function CardsListItem({ item: { name, address, photo } }) {
+function CardsListItem({ item: { id, name, address, photo }, navigation }) {
   function handleAddBookmark() {}
 
+  function handleOpenRestaurant() {
+    navigation.navigate('RestaurantDetails', { id })
+  }
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handleOpenRestaurant}>
       <Image source={{ uri: photo }} style={styles.image} />
       <View style={styles.infoContainer}>
         <View style={styles.header}>
@@ -26,13 +31,16 @@ export default function CardsListItem({ item: { name, address, photo } }) {
         <Spacer />
         <Rating />
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
 CardsListItem.propTypes = {
   item: PropTypes.object.isRequired,
+  navigation: PropTypes.object.isRequired,
 }
+
+export default withNavigation(CardsListItem)
 
 const styles = StyleSheet.create({
   container: {

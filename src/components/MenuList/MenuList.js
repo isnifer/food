@@ -1,34 +1,81 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native'
 import PropTypes from 'prop-types'
+import { useQuery, gql } from '@apollo/client'
+import Products from '@/components/Products'
 import MenuListItem from './MenuListItem'
 
-export default function CardsList(props) {
-  function handleOpenRestaurant() {}
+const RESTAURANT_MENU = gql`
+  query Menu($id: Int!) {
+    menu: product_categories(where: { place_id: { _eq: $id } }) {
+      id
+      name
+      products {
+        id
+        name
+        photo
+        price
+        calories
+      }
+      products_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
+
+export default function MenuList(props) {
+  const { loading, error, data } = useQuery(RESTAURANT_MENU, { variables: { id: props.placeId } })
 
   function handleShowAllMenuItems() {}
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>Full Menu</Text>
-        <TouchableOpacity onPress={handleShowAllMenuItems}>
-          <Text style={styles.showAllButton}>Show all {'→'}</Text>
-        </TouchableOpacity>
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
-        {props.items.map(item => (
-          <TouchableOpacity key={item.id} onPress={handleOpenRestaurant}>
-            <MenuListItem item={item} />
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text>{error}</Text>
+      </View>
+    )
+  }
+
+  return (
+    <View>
+      <Products items={data.menu[0].products} />
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.title}>Full Menu</Text>
+          <TouchableOpacity onPress={handleShowAllMenuItems}>
+            <Text style={styles.showAllButton}>Show all {'→'}</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
+          {data.menu.map(item => (
+            <MenuListItem key={item.id} item={item} />
+          ))}
+        </ScrollView>
+      </View>
     </View>
   )
 }
 
-CardsList.propTypes = {
-  items: PropTypes.array.isRequired,
+MenuList.propTypes = {
+  placeId: PropTypes.number.isRequired,
 }
 
 const styles = StyleSheet.create({

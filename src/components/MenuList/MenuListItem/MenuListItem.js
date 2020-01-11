@@ -3,8 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import MenuListProduct from './MenuListProduct'
 
-export default function MenuListItem({ item }) {
-  const { name, products } = item
+export default function MenuListItem({ item: { name, products } }) {
   const [addedProducts, setAddedProducts] = useState({})
   const [isProductsVisible, setProductsVisibility] = useState(false)
 
