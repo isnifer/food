@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --simulator='iPhone 8 Plus'",
     "start": "react-native start --reset-cache",
     "test": "jest",
     "lint": "eslint ."
@@ -15,6 +15,8 @@
     "@react-native-community/masked-view": "^0.1.5",
     "apollo-link-context": "^1.0.19",
     "graphql": "^14.5.8",
+    "invariant": "^2.2.4",
+    "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
     "react": "16.9.0",
     "react-native": "0.61.5",

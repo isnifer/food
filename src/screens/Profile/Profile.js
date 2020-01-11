@@ -1,50 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, Button, Image, Alert, SafeAreaView, StyleSheet } from 'react-native'
+import React from 'react'
+import { View, Text, Button, Image, SafeAreaView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
-import { getGenericPassword, setGenericPassword } from 'react-native-keychain'
-import Auth0 from 'react-native-auth0'
-import authCredentials from '@/auth0-credentials'
-import { getProfileInfo } from '@/utils/manageProfileInfo'
-
-const auth0 = new Auth0(authCredentials)
+import useAuth from '@/utils/auth/useAuth'
+import useProfile from '@/utils/auth/useProfile'
 
 export default function Profile({ navigation }) {
-  const [profile, setProfile] = useState({})
-  const [isLogoutInProgress, setLogoutStatus] = useState(false)
-
-  useEffect(() => {
-    getProfileInfo().then(setProfile)
-  }, [])
-
-  async function handleLogout() {
-    setLogoutStatus(true)
-
-    try {
-      const credentials = await getGenericPassword()
-      const { refreshToken } = JSON.parse(credentials.password)
-
-      await auth0.auth.revoke({ refreshToken })
-      await setGenericPassword(
-        '',
-        JSON.stringify({ accessToken: null, refreshToken: null, updatedAt: null })
-      )
-    } catch (error) {
-      Alert.alert('Can not logout now', error, [{ text: 'OK' }], { cancelable: false })
-    } finally {
-      setLogoutStatus(false)
-    }
-
-    navigation.navigate('Login')
-  }
+  const profile = useProfile()
+  const {
+    handlers: [logout],
+    loading,
+  } = useAuth(['logout'], { navigation })
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Button
-          title={isLogoutInProgress ? 'Logout...' : 'Logout'}
-          disabled={isLogoutInProgress}
-          onPress={handleLogout}
-        />
+        <Button title={loading ? 'Logout...' : 'Logout'} disabled={loading} onPress={logout} />
       </View>
       <View style={styles.content}>
         <Text style={styles.header}>Welcome {profile.name}</Text>

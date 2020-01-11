@@ -1,8 +1,17 @@
 import React, { useState, useRef } from 'react'
-import { StyleSheet, TextInput, TouchableOpacity, Text, View } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  StyleSheet,
+} from 'react-native'
 import PropTypes from 'prop-types'
 
 export default function LoginForm(props) {
+  const [isLogin, setFormState] = useState(true)
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [emailError, setUsernameError] = useState(false)
@@ -22,16 +31,14 @@ export default function LoginForm(props) {
     }
 
     if (emailError === false && passwordError === false) {
-      return props.isLogin ? props.realmLogin(email, password) : props.createUser(email, password)
+      return isLogin ? props.login(email, password) : props.signup(email, password)
     }
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{props.isLogin ? 'Welcome back' : 'Hello there'}</Text>
-      <Text style={styles.subtitle}>
-        {props.isLogin ? 'Login to your account' : 'Create an account'}
-      </Text>
+    <KeyboardAvoidingView style={styles.container} ehavior="padding" enabled>
+      <Text style={styles.title}>{isLogin ? 'Welcome back' : 'Hello there'}</Text>
+      <Text style={styles.subtitle}>{isLogin ? 'Login to your account' : 'Create an account'}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
@@ -56,41 +63,43 @@ export default function LoginForm(props) {
           onChangeText={text => setPassword(text.trim())}
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={validateLogin}>
-          <Text style={styles.buttonTitle}>{props.isLogin ? 'Login' : 'Sign up'}</Text>
+          <Text style={styles.buttonTitle}>{isLogin ? 'Login' : 'Sign up'}</Text>
         </TouchableOpacity>
         <Text style={styles.forgotPassword}>Forgot your password?</Text>
         <View style={styles.signupBlock}>
           <Text style={styles.signupText}>
-            {props.isLogin ? `Don${"'"}t have an account? ` : 'Already have an account? '}
+            {isLogin ? `Don${"'"}t have an account? ` : 'Already have an account? '}
           </Text>
           <TouchableOpacity
             style={styles.signupButton}
-            onPress={() => props.switchToLogin(state => !state)}>
-            <Text style={styles.signupButtonTitle}>{props.isLogin ? 'Sign up' : 'Login'}</Text>
+            onPress={() => setFormState(state => !state)}>
+            <Text style={styles.signupButtonTitle}>{isLogin ? 'Sign up' : 'Login'}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.googleBlock}>
           <Text style={styles.signupText}>Or login with </Text>
-          <TouchableOpacity style={styles.signupButton} onPress={props.googleLogin}>
+          <TouchableOpacity style={styles.signupButton} onPress={props.google}>
             <Text style={styles.signupButtonTitle}>Google</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
 LoginForm.propTypes = {
-  isLogin: PropTypes.bool.isRequired,
-  googleLogin: PropTypes.func.isRequired,
-  createUser: PropTypes.func.isRequired,
-  realmLogin: PropTypes.func.isRequired,
-  switchToLogin: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired,
+  signup: PropTypes.func.isRequired,
+  google: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 33,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   title: {
     fontSize: 35,

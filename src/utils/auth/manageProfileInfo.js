@@ -1,9 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage'
 
 export async function getProfileInfo() {
-  const profileInfo = await AsyncStorage.getItem('@FOOD_APP:PROFILE_INFO')
-
-  return JSON.parse(profileInfo)
+  return JSON.parse(await AsyncStorage.getItem('@FOOD_APP:PROFILE_INFO'))
 }
 
 export function setProfileInfo(profileInfo) {
