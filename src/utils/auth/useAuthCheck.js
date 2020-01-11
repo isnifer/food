@@ -28,13 +28,12 @@ export default function useAuthCheck({ navigation }) {
         const nowSeconds = Math.round(new Date().getTime() / 1000)
 
         // If last updated time more than token expiration time — refreshToken
-        if (nowSeconds - updatedAtSeconds > 60) {
+        if (nowSeconds - updatedAtSeconds > 86400) {
           const freshCredentials = await auth0.auth.refreshToken({ refreshToken })
-
           await updateCredentials(Object.assign(freshCredentials, { refreshToken }))
-        } else {
-          navigation.navigate('App')
         }
+
+        navigation.navigate('App')
       } catch (error) {
         setLoading(false)
       }

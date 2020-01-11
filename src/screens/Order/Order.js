@@ -1,11 +1,11 @@
 import React from 'react'
 import { View, Text, SafeAreaView } from 'react-native'
 
-export default function MyOrder() {
+export default function Order() {
   return (
     <SafeAreaView>
       <View>
-        <Text>MyOrder Screen</Text>
+        <Text>Order Screen</Text>
       </View>
     </SafeAreaView>
   )
