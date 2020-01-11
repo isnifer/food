@@ -40,9 +40,10 @@ const FEATURED_PLACES = gql`
 `
 const TOP_CATEGORIES = gql`
   {
-    categories(order_by: { id: asc }, limit: 5) {
+    categories(order_by: { id: asc }, limit: 10) {
       id
       name
+      photo
       places_aggregate {
         aggregate {
           count
@@ -151,6 +152,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   categories: {
-    marginTop: 10,
+    marginTop: 32,
   },
 })

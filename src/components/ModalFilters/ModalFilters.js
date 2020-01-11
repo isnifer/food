@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
 import FilterList from './FilterList'
@@ -28,10 +28,17 @@ const filters = [
   { id: 4, name: 'Free Delivery' },
 ]
 
+const prices = [
+  { id: 1, name: 'Cheap Eats' },
+  { id: 2, name: 'Mid-range' },
+  { id: 3, name: 'Fine Dining' },
+]
+
 export default function Filters(props) {
   const [selectedCuisines, setCuisine] = useState({})
   const [selectedSort, setSort] = useState('')
   const [selectedFilters, setFilters] = useState({})
+  const [selectedPrices, setPrices] = useState({})
 
   function handleResetFilters() {
     props.toggle()
@@ -42,16 +49,9 @@ export default function Filters(props) {
   }
 
   return (
-    <Modal
-      hideModalContentWhileAnimating
-      style={styles.modal}
-      isVisible={props.isVisible}
-      swipeDirection={['up', 'down']}
-      onSwipeComplete={props.toggle}
-      onBackdropPress={props.toggle}
-      onBackButtonPress={props.toggle}>
+    <Modal style={styles.modal} isVisible={props.isVisible} onBackButtonPress={props.toggle}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity onPress={handleResetFilters}>
               <Text style={styles.buttonReset}>Reset</Text>
@@ -83,7 +83,16 @@ export default function Filters(props) {
               onPress={setFilters}
             />
           </View>
-        </View>
+          <View style={styles.filterGroup}>
+            <Text style={styles.filterTitle}>PRICE</Text>
+            <FilterList
+              type="checkbox"
+              items={prices}
+              selected={selectedPrices}
+              onPress={setPrices}
+            />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </Modal>
   )
