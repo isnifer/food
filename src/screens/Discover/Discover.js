@@ -22,6 +22,19 @@ const FEATURED_PLACES = gql`
       name
       address
       photo
+      delivery {
+        name
+        price
+        minimum
+      }
+      rating: ratings_aggregate {
+        aggregate {
+          count
+          avg {
+            rating
+          }
+        }
+      }
     }
   }
 `

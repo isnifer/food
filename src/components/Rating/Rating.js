@@ -1,17 +1,16 @@
 import React from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
-import Badge from '@/components/Badge'
+import declensionFilter from '@/utils/declensionFilter'
 
 export default function Rating({ rating, count }) {
+  const countText = declensionFilter(count, { 1: '@ vote', other: '@ votes' })
+
   return (
-    <View style={styles.infoContainer}>
-      <View style={styles.ratingContainer}>
-        <Image source={require('./images/icon_star.png')} style={styles.iconStar} />
-        <Text style={styles.ratingValue}> {rating} </Text>
-        <Text style={styles.ratingCount}>({count} ratings)</Text>
-      </View>
-      <Badge title="Free delivery" />
+    <View style={styles.ratingContainer}>
+      <Image source={require('./images/icon_star.png')} style={styles.iconStar} />
+      <Text style={styles.ratingValue}> {rating} </Text>
+      <Text style={styles.ratingCount}>({countText})</Text>
     </View>
   )
 }
@@ -22,17 +21,11 @@ Rating.propTypes = {
 }
 
 Rating.defaultProps = {
-  rating: 4.9,
-  count: 120,
+  rating: 0,
+  count: 0,
 }
 
 const styles = StyleSheet.create({
-  infoContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
