@@ -1,23 +1,25 @@
 import React from 'react'
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 
-export default function Category({ category: { name, photo, ...category }, isFirst }) {
+export default function Category({ category: { name, photo, ...category }, isFirst, onPress }) {
   const places = category.places_aggregate.aggregate.count
+  const stylesContainer = [styles.container, isFirst && styles.containerFirst]
 
   return (
-    <View style={[styles.container, isFirst && styles.containerFirst]}>
+    <TouchableOpacity style={stylesContainer} onPress={() => onPress({ id: category.id, photo })}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: photo }} style={styles.image} />
       </View>
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.subtitle}>{places} places</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
 Category.propTypes = {
   category: PropTypes.object.isRequired,
+  onPress: PropTypes.func.isRequired,
   isFirst: PropTypes.bool,
 }
 

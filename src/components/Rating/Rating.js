@@ -10,7 +10,7 @@ export default function Rating({ rating, count }) {
     <View style={styles.ratingContainer}>
       <Image source={require('./images/icon_star.png')} style={styles.iconStar} />
       <Text style={styles.ratingValue}> {rating} </Text>
-      <Text style={styles.ratingCount}>({countText})</Text>
+      {!!count && <Text style={styles.ratingCount}>({countText})</Text>}
     </View>
   )
 }

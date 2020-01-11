@@ -1,32 +1,65 @@
 import React from 'react'
 import { View, Text, ImageBackground, StatusBar, StyleSheet } from 'react-native'
+import PropTypes from 'prop-types'
+import { useQuery, gql } from '@apollo/client'
+import { get } from 'lodash'
 import CardsList from '@/components/CardsList'
-import pictures from './pictures.json'
 
-const uri = [
-  'https://images.unsplash.com/photo-1542528406-f04308dcf0a1?ixlib=rb-1.2.1',
-  'ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60',
-].join('&')
+const RESTAURANTS_BY_CATEGORY = gql`
+  query RestaurantsByCategory($id: Int!) {
+    category: categories_by_pk(id: $id) {
+      name
+      photo
+      stats: places_aggregate {
+        aggregate {
+          count
+        }
+      }
+      places: places_categories {
+        place {
+          id
+          name
+          photo
+          address
+          delivery {
+            name
+          }
+        }
+      }
+    }
+  }
+`
 
-const restaurants = [
-  ...pictures,
-  ...pictures.map(item => ({ ...item, id: item.id + 10 })),
-  ...pictures.map(item => ({ ...item, id: item.id + 20 })),
-  ...pictures.map(item => ({ ...item, id: item.id + 30 })),
-  ...pictures.map(item => ({ ...item, id: item.id + 40 })),
-  ...pictures.map(item => ({ ...item, id: item.id + 50 })),
-]
+export default function Restaurants({ navigation }) {
+  const { loading, error, data } = useQuery(RESTAURANTS_BY_CATEGORY, {
+    variables: { id: navigation.getParam('categoryId') },
+  })
+  const name = get(data, 'category.name', '')
+  const places = get(data, 'category.places', [])
+  const count = get(data, 'category.stats.aggregate.count', 0)
 
-export default function Restaurants() {
+  const photo = get(data, 'category.photo', '').replace('3x', '2x')
+  const photoPlaceholder = navigation.getParam('photo').replace('3x', '2x')
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ImageBackground source={{ uri }} style={styles.image}>
-        <Text style={styles.title}>Turkish{'\n'}Restaurants</Text>
+      <ImageBackground
+        source={{ uri: photo || photoPlaceholder }}
+        blurRadius={photo ? 0 : 10}
+        resizeMode="cover"
+        style={styles.image}>
+        <View style={styles.photoMask}>
+          <Text style={styles.title}>{name}</Text>
+        </View>
       </ImageBackground>
-      <CardsList items={restaurants} />
+      <CardsList loading={loading} error={error} items={places} count={count} />
     </View>
   )
+}
+
+Restaurants.propTypes = {
+  navigation: PropTypes.object.isRequired,
 }
 
 Restaurants.navigationOptions = {
@@ -40,9 +73,12 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 235,
+  },
+  photoMask: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, .2)',
+    backgroundColor: 'rgba(0, 0, 0, .7)',
   },
   title: {
     fontSize: 30,

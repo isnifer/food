@@ -1,10 +1,17 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { withNavigation } from 'react-navigation'
 import Category from './Category'
 
-export default function Categories(props) {
-  function handleShowAllCategories() {}
+function Categories(props) {
+  function handleShowAllCategories() {
+    props.navigation.navigate('Categories')
+  }
+
+  function handlePressCategory({ id, photo }) {
+    props.navigation.navigate('Restaurants', { categoryId: id, photo })
+  }
 
   return (
     <View style={styles.container}>
@@ -19,15 +26,23 @@ export default function Categories(props) {
         showsHorizontalScrollIndicator={false}
         style={styles.categoriesContainer}>
         {props.items.map((category, index) => (
-          <Category key={category.id} category={category} isFirst={index === 0} />
+          <Category
+            key={category.id}
+            category={category}
+            isFirst={index === 0}
+            onPress={handlePressCategory}
+          />
         ))}
       </ScrollView>
     </View>
   )
 }
 
+export default withNavigation(Categories)
+
 Categories.propTypes = {
   items: PropTypes.array.isRequired,
+  navigation: PropTypes.object.isRequired,
 }
 
 const styles = StyleSheet.create({

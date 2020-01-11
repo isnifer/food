@@ -4,21 +4,19 @@ import PropTypes from 'prop-types'
 import Rating from '@/components/Rating'
 import Spacer from '@/components/Spacer'
 
-export default function CardsListItem({ item }) {
-  const { title, subtitle, url } = item
-
+export default function CardsListItem({ item: { name, address, photo } }) {
   function handleAddBookmark() {}
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: url }} style={styles.image} />
+      <Image source={{ uri: photo }} style={styles.image} />
       <View style={styles.infoContainer}>
-        <View style={styles.titlesContainer}>
-          <View>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.subtitleContainer}>
+        <View style={styles.header}>
+          <View style={styles.titlesContainer}>
+            <Text style={styles.name}>{name}</Text>
+            <View style={styles.addressContainer}>
               <Image source={require('./images/icon_location.png')} style={styles.iconLocation} />
-              <Text style={styles.subtitle}> {subtitle}</Text>
+              <Text style={styles.address}>{address}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={handleAddBookmark}>
@@ -60,26 +58,33 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 16,
   },
-  titlesContainer: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  title: {
+  titlesContainer: {
+    flex: 1,
+  },
+  name: {
     fontSize: 18,
     fontWeight: '900',
     color: '#26315F',
   },
-  subtitleContainer: {
+  addressContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flexShrink: 1,
     marginTop: 6,
   },
-  subtitle: {
+  address: {
     fontSize: 14,
     fontWeight: '600',
     color: '#B9BDC5',
+    flex: 1,
+    flexShrink: 1,
+    marginLeft: 5,
   },
   iconLocation: {
     width: 11,
