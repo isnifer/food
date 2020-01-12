@@ -50,7 +50,7 @@ export default function MenuList(props) {
   if (error) {
     return (
       <View style={styles.container}>
-        <Text>{error}</Text>
+        <Text>{JSON.stringify(error)}</Text>
       </View>
     )
   }

@@ -24,7 +24,7 @@ export default function CardsList(props) {
   if (props.error) {
     return (
       <View style={styles.container}>
-        <Text>{props.error}</Text>
+        <Text>{JSON.stringify(props.error)}</Text>
       </View>
     )
   }
@@ -47,7 +47,7 @@ CardsList.propTypes = {
   loading: PropTypes.bool.isRequired,
   items: PropTypes.array.isRequired,
   count: PropTypes.number.isRequired,
-  error: PropTypes.string,
+  error: PropTypes.object,
 }
 
 CardsList.defaultProps = {

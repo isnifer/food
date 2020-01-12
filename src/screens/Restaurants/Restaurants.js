@@ -15,7 +15,7 @@ const RESTAURANTS_BY_CATEGORY = gql`
           count
         }
       }
-      places: places_categories {
+      places {
         place {
           id
           name
