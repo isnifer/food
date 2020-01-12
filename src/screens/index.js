@@ -6,9 +6,11 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 
 // AppStack
+import Menu from './Menu'
+import Checkout from './Checkout'
+import Categories from './Categories'
 import Restaurants from './Restaurants'
 import RestaurantDetails from './RestaurantDetails'
-import Checkout from './Checkout'
 
 // TabNavigator
 import Discover from './Discover'
@@ -66,9 +68,11 @@ const TabNavigator = createBottomTabNavigator(
 const AppStack = createStackNavigator(
   {
     Tabs: TabNavigator,
+    Menu,
+    Checkout,
+    Categories,
     Restaurants,
     RestaurantDetails,
-    Checkout,
   },
   { initialRouteName: 'Tabs' }
 )

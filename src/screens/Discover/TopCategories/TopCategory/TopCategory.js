@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   name: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '500',
     color: '#26315F',
     marginTop: 9,

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {
   View,
   Text,
-  TextInput,
   Image,
   StatusBar,
   ScrollView,
@@ -10,106 +9,33 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native'
-import { useQuery, gql } from '@apollo/client'
-import Cards from '@/components/Cards'
-import Categories from '@/components/Categories'
 import ModalFilters from '@/components/ModalFilters'
-
-const FEATURED_PLACES = gql`
-  {
-    places(order_by: { id: asc }, limit: 5) {
-      id
-      name
-      address
-      photo
-      delivery {
-        name
-        price
-        minimum
-      }
-      rating: ratings_aggregate {
-        aggregate {
-          count
-          avg {
-            rating
-          }
-        }
-      }
-    }
-  }
-`
-const TOP_CATEGORIES = gql`
-  {
-    categories(order_by: { id: asc }, limit: 10) {
-      id
-      name
-      photo
-      places_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`
+import Input from '@/components/Input'
+import TopCategories from './TopCategories'
+import TopPlaces from './TopPlaces'
 
 export default function Discover() {
-  const places = useQuery(FEATURED_PLACES)
-  const categories = useQuery(TOP_CATEGORIES)
-  const [search, setSearch] = useState('') // eslint-disable-line
   const [isFiltersVisible, setFiltersVisibility] = useState(false) // eslint-disable-line
-
-  function onSubmitEditingSearch() {}
-
-  // eslint-disable-next-line
-  function renderPlaces({ loading, error, data }) {
-    if (loading) {
-      return <Text>Loading...</Text>
-    }
-
-    if (error) {
-      return <Text>{JSON.stringify(error, null, 2)}</Text>
-    }
-
-    return <Cards items={data.places} />
-  }
-
-  // eslint-disable-next-line
-  function renderCategories({ loading, error, data }) {
-    if (loading) {
-      return <Text>Loading...</Text>
-    }
-
-    if (error) {
-      return <Text>{JSON.stringify(error, null, 2)}</Text>
-    }
-
-    return <Categories items={data.categories} />
-  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search"
-          placeholderTextColor="rgba(44,44,44,0.4)"
-          returnKeyType="next"
-          onSubmitEditing={onSubmitEditingSearch}
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          onChangeText={text => setSearch(text.trim())}
-        />
+        <View style={styles.inputContainer}>
+          <Input />
+        </View>
         <TouchableOpacity onPress={() => setFiltersVisibility(true)}>
           <Image source={require('./images/icon_filter.png')} style={styles.iconFilter} />
         </TouchableOpacity>
       </View>
       <ScrollView>
         <Text style={styles.title}>Discovery new places</Text>
-        {renderPlaces(places)}
-        <View style={styles.categories}>{renderCategories(categories)}</View>
+        <View style={styles.topPlaces}>
+          <TopPlaces />
+        </View>
+        <View style={styles.topCategories}>
+          <TopCategories />
+        </View>
       </ScrollView>
       <ModalFilters isVisible={isFiltersVisible} toggle={() => setFiltersVisibility(false)} />
     </SafeAreaView>
@@ -128,18 +54,9 @@ const styles = StyleSheet.create({
     height: 42,
     margin: 16,
   },
-  input: {
+  inputContainer: {
     flex: 1,
-    height: 42,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 21,
     marginRight: 13,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    fontWeight: '300',
-    color: '#96969A',
-    borderWidth: 1,
-    borderColor: '#C7CAD1',
   },
   iconFilter: {
     width: 42,
@@ -151,7 +68,10 @@ const styles = StyleSheet.create({
     color: '#26315F',
     marginHorizontal: 16,
   },
-  categories: {
+  topPlaces: {
+    marginTop: 16,
+  },
+  topCategories: {
     marginTop: 32,
   },
 })

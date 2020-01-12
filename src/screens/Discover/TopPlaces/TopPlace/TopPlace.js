@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation'
 import Badge from '@/components/Badge'
 import Rating from '@/components/Rating'
 
-function Card({ item, isFirst, navigation }) {
+function TopPlace({ item, isFirst, navigation }) {
   const {
     id,
     name,
@@ -36,13 +36,13 @@ function Card({ item, isFirst, navigation }) {
   )
 }
 
-Card.propTypes = {
+TopPlace.propTypes = {
   item: PropTypes.object.isRequired,
   isFirst: PropTypes.bool.isRequired,
   navigation: PropTypes.object.isRequired,
 }
 
-export default withNavigation(Card)
+export default withNavigation(TopPlace)
 
 const styles = StyleSheet.create({
   container: {

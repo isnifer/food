@@ -1,16 +1,42 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { useQuery, gql } from '@apollo/client'
 import { withNavigation } from 'react-navigation'
-import Category from './Category'
+import TopCategory from './TopCategory'
+
+const TOP_CATEGORIES = gql`
+  {
+    categories(order_by: { id: asc }, limit: 10) {
+      id
+      name
+      photo
+      places_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
 
 function Categories(props) {
+  const { loading, error, data } = useQuery(TOP_CATEGORIES)
+
   function handleShowAllCategories() {
     props.navigation.navigate('Categories')
   }
 
   function handlePressCategory({ id, photo }) {
     props.navigation.navigate('Restaurants', { categoryId: id, photo })
+  }
+
+  if (loading) {
+    return <Text>Loading...</Text>
+  }
+
+  if (error) {
+    return <Text>{JSON.stringify(error, null, 2)}</Text>
   }
 
   return (
@@ -25,8 +51,8 @@ function Categories(props) {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.categoriesContainer}>
-        {props.items.map((category, index) => (
-          <Category
+        {data.categories.map((category, index) => (
+          <TopCategory
             key={category.id}
             category={category}
             isFirst={index === 0}
@@ -38,10 +64,7 @@ function Categories(props) {
   )
 }
 
-export default withNavigation(Categories)
-
 Categories.propTypes = {
-  items: PropTypes.array.isRequired,
   navigation: PropTypes.object.isRequired,
 }
 
@@ -65,3 +88,5 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
 })
+
+export default withNavigation(Categories)

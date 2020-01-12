@@ -37,15 +37,13 @@ export default function Restaurants({ navigation }) {
   const name = get(data, 'category.name', '')
   const places = get(data, 'category.places', [])
   const count = get(data, 'category.stats.aggregate.count', 0)
-
-  const photo = get(data, 'category.photo', '').replace('3x', '2x')
-  const photoPlaceholder = navigation.getParam('photo').replace('3x', '2x')
+  const photo = get(data, 'category.photo', '') || navigation.getParam('photo')
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <ImageBackground
-        source={{ uri: photo || photoPlaceholder }}
+        source={{ uri: photo }}
         blurRadius={photo ? 0 : 10}
         resizeMode="cover"
         style={styles.image}>
@@ -63,7 +61,7 @@ Restaurants.propTypes = {
 }
 
 Restaurants.navigationOptions = {
-  headerTransparent: true,
+  headerShown: false,
 }
 
 const styles = StyleSheet.create({
