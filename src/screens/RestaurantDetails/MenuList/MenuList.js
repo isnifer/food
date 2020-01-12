@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { useQuery, gql } from '@apollo/client'
+import { get } from 'lodash'
 import Products from '@/components/Products'
 import MenuListItem from './MenuListItem'
 
@@ -54,9 +55,21 @@ export default function MenuList(props) {
     )
   }
 
+  const products = get(data.menu, [0, 'products']) || []
+
+  if (!products.length) {
+    return (
+      <View style={{ flex: 1, marginTop: 150, paddingHorizontal: 16 }}>
+        <Text style={{ fontSize: 32, fontWeight: '700', color: '#26315F', textAlign: 'center' }}>
+          Sorry, but restaurant did not provide menu for us yet
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <View>
-      <Products items={data.menu[0].products} />
+      <Products items={products} />
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Full Menu</Text>

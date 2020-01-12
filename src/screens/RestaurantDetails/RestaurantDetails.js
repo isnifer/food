@@ -15,7 +15,7 @@ import { useQuery, gql } from '@apollo/client'
 import { get } from 'lodash'
 import declensionFilter from '@/utils/declensionFilter'
 import Badge from '@/components/Badge'
-import MenuList from '@/components/MenuList'
+import MenuList from './MenuList'
 // import FeaturePickup from './FeaturePickup'
 
 const RESTAURANT = gql`

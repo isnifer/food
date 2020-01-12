@@ -72,6 +72,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   topCategories: {
-    marginTop: 32,
+    marginTop: 16,
   },
 })

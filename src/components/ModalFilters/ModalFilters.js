@@ -23,7 +23,6 @@ const sortBy = [
 
 const filters = [
   { id: 1, name: 'Open Now' },
-  { id: 2, name: 'Open 24/7' },
   { id: 3, name: 'Credit Card' },
   { id: 4, name: 'Free Delivery' },
 ]
@@ -85,12 +84,7 @@ export default function Filters(props) {
           </View>
           <View style={styles.filterGroup}>
             <Text style={styles.filterTitle}>PRICE</Text>
-            <FilterList
-              type="checkbox"
-              items={prices}
-              selected={selectedPrices}
-              onPress={setPrices}
-            />
+            <FilterList type="tags" items={prices} selected={selectedPrices} onPress={setPrices} />
           </View>
         </ScrollView>
       </SafeAreaView>

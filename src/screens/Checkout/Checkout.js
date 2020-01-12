@@ -15,7 +15,7 @@ const paymentMethods = [
 ]
 
 // eslint-disable-next-line max-len
-const iconChecked = require('@/components/MenuList/MenuListItem/MenuListProduct/images/icon_checked.png')
+const iconChecked = require('@/screens/RestaurantDetails/MenuList/MenuListItem/MenuListProduct/images/icon_checked.png')
 
 export default function Checkout() {
   const [selectedAddress, setAddress] = useState(1)
