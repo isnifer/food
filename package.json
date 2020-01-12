@@ -29,7 +29,8 @@
     "react-native-screens": "^2.0.0-alpha.22",
     "react-navigation": "^4.0.10",
     "react-navigation-stack": "^2.0.4",
-    "react-navigation-tabs": "^2.7.0"
+    "react-navigation-tabs": "^2.7.0",
+    "rn-placeholder": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
