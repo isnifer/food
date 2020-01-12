@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 
 export default function CategoryListItem({ item, onPress }) {
@@ -9,7 +9,9 @@ export default function CategoryListItem({ item, onPress }) {
 
   return (
     <TouchableOpacity activeOpacity={0.6} style={styles.container} onPress={handlePressCategory}>
-      <Image source={{ uri: item.photo }} resizeMode="cover" style={styles.image} />
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: item.photo }} resizeMode="cover" style={styles.image} />
+      </View>
       <Text style={styles.title}>{item.name}</Text>
     </TouchableOpacity>
   )
@@ -25,6 +27,12 @@ const styles = StyleSheet.create({
     width: '48%',
     marginBottom: 16,
   },
+  imageContainer: {
+    shadowColor: '#rgba(0, 0, 0, .6)',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+  },
   image: {
     height: 150,
     borderRadius: 8,
@@ -34,5 +42,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#26315F',
     textAlign: 'center',
+    marginTop: 5,
   },
 })

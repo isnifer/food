@@ -1,34 +1,31 @@
 import React from 'react'
-import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, FlatList, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import { useQuery, gql } from '@apollo/client'
-import { get } from 'lodash'
+import { get, last, unionBy } from 'lodash'
 import Input from '@/components/Input'
 import CategoryListItem from './CategoryListItem'
 
-const CATEGORIES = gql`
-  {
-    categories(order_by: { name: asc }) {
+const PAGINATED_CATEGORIES = gql`
+  query PaginatedCategories($id: Int!) {
+    categories(limit: 20, where: { id: { _gt: $id } }) {
       id
       name
       photo
-      places_aggregate {
-        aggregate {
-          count
-        }
-      }
     }
   }
 `
 
 export default function Categories({ navigation }) {
-  const { loading, error, data } = useQuery(CATEGORIES)
+  const { loading, error, data, fetchMore } = useQuery(PAGINATED_CATEGORIES, {
+    variables: { id: 0 },
+  })
+  const categories = get(data, 'categories') || []
+  const lastCategoryId = get(last(categories), 'id', 0)
 
-  function handlePressItem({ categoryId, photo }) {
+  function handlePressCategory({ categoryId, photo }) {
     navigation.navigate('Restaurants', { categoryId, photo })
   }
-
-  const categories = get(data, 'categories') || []
 
   if (loading) {
     return (
@@ -41,7 +38,7 @@ export default function Categories({ navigation }) {
   if (error) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>{error}</Text>
+        <Text>{JSON.stringify(error, null, 2)}</Text>
       </SafeAreaView>
     )
   }
@@ -52,11 +49,35 @@ export default function Categories({ navigation }) {
         <View style={styles.inputContainer}>
           <Input placeholder="Search category" />
         </View>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.list}>
-          {categories.map((item, index) => (
-            <CategoryListItem key={item.id} index={index} item={item} onPress={handlePressItem} />
-          ))}
-        </ScrollView>
+        <FlatList
+          style={styles.list}
+          data={categories}
+          listkey="id"
+          numColumns={2}
+          columnWrapperStyle={styles.listColumnWrapper}
+          onEndReached={() =>
+            fetchMore({
+              variables: { id: lastCategoryId },
+              updateQuery: (previousResult, { fetchMoreResult }) => {
+                if (!fetchMoreResult) {
+                  return previousResult
+                }
+
+                return Object.assign({}, previousResult, {
+                  categories: unionBy(previousResult.categories, fetchMoreResult.categories, 'id'),
+                })
+              },
+            })
+          }
+          renderItem={({ item, index }) => (
+            <CategoryListItem
+              key={item.id}
+              index={index}
+              item={item}
+              onPress={handlePressCategory}
+            />
+          )}
+        />
       </View>
     </SafeAreaView>
   )
@@ -89,9 +110,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   list: {
-    paddingTop: 16,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
+    padding: 16,
+  },
+  listColumnWrapper: {
     justifyContent: 'space-between',
     flexWrap: 'wrap',
   },
