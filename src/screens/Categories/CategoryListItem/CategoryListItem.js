@@ -28,10 +28,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   imageContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     shadowColor: '#rgba(0, 0, 0, .6)',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
-    shadowRadius: 6,
+    shadowRadius: 8,
   },
   image: {
     height: 150,
