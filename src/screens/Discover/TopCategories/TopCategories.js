@@ -9,7 +9,7 @@ import TopCategory from './TopCategory'
 
 const TOP_CATEGORIES = gql`
   {
-    categories(order_by: { id: asc }, limit: 10) {
+    categories(order_by: { places_aggregate: { count: desc } }, limit: 10) {
       id
       name
       photo

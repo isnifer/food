@@ -12,7 +12,7 @@ function TopPlace({ item, isFirst, navigation }) {
     address,
     photo,
     delivery,
-    rating: { aggregate: rating },
+    rating: { aggregate },
   } = item
 
   function handlePressStore() {
@@ -20,6 +20,7 @@ function TopPlace({ item, isFirst, navigation }) {
   }
 
   const stylesContainer = [styles.container, isFirst && styles.containerFirst]
+  const rating = aggregate.avg.rating ? aggregate.avg.rating.toPrecision(2) : 0
 
   return (
     <TouchableOpacity activeOpacity={0.8} style={stylesContainer} onPress={handlePressStore}>
@@ -27,9 +28,7 @@ function TopPlace({ item, isFirst, navigation }) {
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.address}>{address}</Text>
       <View style={styles.infoContainer}>
-        {!!rating.count && (
-          <Rating rating={rating.avg.rating.toPrecision(2)} count={rating.count} />
-        )}
+        <Rating rating={rating} count={aggregate.count} />
         {delivery && <Badge title={delivery.name} />}
       </View>
     </TouchableOpacity>
