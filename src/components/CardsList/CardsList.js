@@ -8,10 +8,13 @@ import {
   StyleSheet,
 } from 'react-native'
 import PropTypes from 'prop-types'
+import { withNavigation } from 'react-navigation'
 import CardsListItem from './CardsListItem'
 
-export default function CardsList(props) {
-  function handleOpenRestaurant() {}
+function CardsList(props) {
+  function handleOpenRestaurant(id) {
+    props.navigation.navigate('RestaurantDetails', { id })
+  }
 
   if (props.loading) {
     return (
@@ -34,7 +37,7 @@ export default function CardsList(props) {
       {!!props.count && <Text style={styles.counter}>{props.count} places</Text>}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
         {props.items.map(({ place }) => (
-          <TouchableOpacity key={place.id} onPress={handleOpenRestaurant}>
+          <TouchableOpacity key={place.id} onPress={() => handleOpenRestaurant(place.id)}>
             <CardsListItem item={place} />
           </TouchableOpacity>
         ))}
@@ -44,6 +47,7 @@ export default function CardsList(props) {
 }
 
 CardsList.propTypes = {
+  navigation: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   items: PropTypes.array.isRequired,
   count: PropTypes.number.isRequired,
@@ -71,3 +75,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 })
+
+export default withNavigation(CardsList)

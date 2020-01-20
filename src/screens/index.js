@@ -11,6 +11,7 @@ import Checkout from './Checkout'
 import Categories from './Categories'
 import Restaurants from './Restaurants'
 import RestaurantDetails from './RestaurantDetails'
+import SearchResults from './SearchResults'
 
 // TabNavigator
 import Discover from './Discover'
@@ -73,14 +74,13 @@ const AppStack = createStackNavigator(
     Categories,
     Restaurants,
     RestaurantDetails,
+    SearchResults,
   },
   { initialRouteName: 'Tabs' }
 )
 
 const StackNavigator = createSwitchNavigator(
   {
-    // implement this https://reactnavigation.org/docs/en/auth-flow.html
-    // AuthLoading: AuthLoadingScreen,
     App: AppStack,
     Auth: AuthStack,
   },

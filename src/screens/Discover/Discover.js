@@ -9,10 +9,20 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native'
+import { gql } from '@apollo/client'
 import ModalFilters from '@/components/ModalFilters'
-import Input from '@/components/Input'
+import SearchInput from '@/components/SearchInput'
 import TopCategories from './TopCategories'
 import TopPlaces from './TopPlaces'
+
+const SEARCH_RESTAURANTS = gql`
+  query SearchRestaurants($query: String!) {
+    results: places(where: { name: { _ilike: $query } }) {
+      id
+      name
+    }
+  }
+`
 
 export default function Discover() {
   const [isFiltersVisible, setFiltersVisibility] = useState(false) // eslint-disable-line
@@ -22,7 +32,7 @@ export default function Discover() {
       <StatusBar barStyle="dark-content" />
       <View style={styles.searchContainer}>
         <View style={styles.inputContainer}>
-          <Input />
+          <SearchInput query={SEARCH_RESTAURANTS} />
         </View>
         <TouchableOpacity onPress={() => setFiltersVisibility(true)}>
           <Image source={require('./images/icon_filter.png')} style={styles.iconFilter} />
@@ -48,11 +58,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   searchContainer: {
+    position: 'relative',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     height: 42,
     margin: 16,
+    zIndex: 2,
   },
   inputContainer: {
     flex: 1,
