@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { withNavigation } from 'react-navigation'
+import declensionFilter from '@/utils/declensionFilter'
 import CardsListItem from './CardsListItem'
 
 function CardsList(props) {
@@ -34,7 +35,11 @@ function CardsList(props) {
 
   return (
     <View style={styles.container}>
-      {!!props.count && <Text style={styles.counter}>{props.count} places</Text>}
+      {!!props.count && (
+        <Text style={styles.counter}>
+          {declensionFilter(props.count, { 1: '@ place', other: '@ places' })}
+        </Text>
+      )}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
         {props.items.map(({ place }) => (
           <TouchableOpacity key={place.id} onPress={() => handleOpenRestaurant(place.id)}>
