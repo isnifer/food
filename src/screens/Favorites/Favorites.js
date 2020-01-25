@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   View,
   Text,
@@ -36,7 +36,7 @@ function SearchResultstList(props) {
   if (!props.items.length) {
     return (
       <View style={styles.container}>
-        <Text>Nothing Found</Text>
+        <Text style={styles.nothingFoundText}>There are no Favorites yet</Text>
       </View>
     )
   }
@@ -111,13 +111,23 @@ const FAVORITES = gql`
 export default function Favorites({ navigation }) {
   const userProfile = getSyncProfile()
   const variables = { userId: userProfile.id }
-
   const { loading, error, data, refetch } = useQuery(FAVORITES, { variables })
-  const favorites = get(data, 'favorites', [])
+
+  useEffect(() => {
+    const focusListener = navigation.addListener('didFocus', () => {
+      refetch()
+    })
+
+    return function cleanup() {
+      focusListener.remove()
+    }
+  }, [])
 
   function handleOpenRestaurant(id) {
     navigation.navigate('RestaurantDetails', { id })
   }
+
+  const favorites = get(data, 'favorites', [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,5 +167,12 @@ const styles = StyleSheet.create({
   listContainer: {
     marginTop: 10,
     paddingHorizontal: 12,
+  },
+  nothingFoundText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#26315F',
+    marginTop: 16,
+    textAlign: 'center',
   },
 })
