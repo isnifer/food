@@ -2,8 +2,9 @@ import React from 'react'
 import {
   View,
   Text,
-  ImageBackground,
   Image,
+  ImageBackground,
+  TouchableOpacity,
   StatusBar,
   ScrollView,
   ActivityIndicator,
@@ -11,15 +12,16 @@ import {
   StyleSheet,
 } from 'react-native'
 import PropTypes from 'prop-types'
-import { useQuery, gql } from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
 import { get } from 'lodash'
+import { getSyncProfile } from '@/utils/auth/syncProfile'
 import declensionFilter from '@/utils/declensionFilter'
 import Badge from '@/components/Badge'
 import MenuList from './MenuList'
 // import FeaturePickup from './FeaturePickup'
 
-const RESTAURANT = gql`
-  query Restaurant($id: Int!) {
+const LOAD_RESTAURANT = gql`
+  query Restaurant($id: Int!, $userId: String!) {
     restaurant: places_by_pk(id: $id) {
       id
       name
@@ -36,13 +38,46 @@ const RESTAURANT = gql`
           }
         }
       }
+      favorites: favorites_aggregate {
+        aggregate {
+          count
+        }
+      }
+      isFavorited: favorites_aggregate(
+        where: { user_id: { _eq: $userId }, place_id: { _eq: $id } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
+
+const ADD_FAVORITE = gql`
+  mutation AddFavorite($id: Int!, $userId: String!) {
+    insert_place_favorites(objects: { place_id: $id, user_id: $userId }) {
+      affected_rows
+    }
+  }
+`
+
+const REMOVE_FAVORITE = gql`
+  mutation RemoveFavorite($id: Int!, $userId: String!) {
+    delete_place_favorites(where: { place_id: { _eq: $id }, user_id: { _eq: $userId } }) {
+      affected_rows
     }
   }
 `
 
 export default function RestaurantDetails({ navigation }) {
-  const id = navigation.getParam('id')
-  const { loading, error, data } = useQuery(RESTAURANT, { variables: { id } })
+  const userProfile = getSyncProfile()
+  const variables = { id: navigation.getParam('id'), userId: userProfile.id }
+
+  const [addFavorite] = useMutation(ADD_FAVORITE, { variables })
+  const [removeFavorite] = useMutation(REMOVE_FAVORITE, { variables })
+
+  const { loading, error, data, refetch } = useQuery(LOAD_RESTAURANT, { variables })
 
   if (loading) {
     return (
@@ -60,6 +95,14 @@ export default function RestaurantDetails({ navigation }) {
         <ActivityIndicator />
       </View>
     )
+  }
+
+  function handleManageBookmark() {
+    if (restaurant.isFavorited.aggregate.count) {
+      return removeFavorite().then(() => refetch())
+    }
+
+    return addFavorite().then(() => refetch())
   }
 
   const restaurant = get(data, 'restaurant') || {}
@@ -99,11 +142,16 @@ export default function RestaurantDetails({ navigation }) {
             <View style={styles.statsBookmarks}>
               <View style={styles.statsItemContainer}>
                 <View style={styles.statsTitle}>
-                  <Image
-                    source={require('./images/icon_bookmark.png')}
-                    style={styles.iconBookmark}
-                  />
-                  <Text style={styles.ratingValue}> 90k</Text>
+                  <TouchableOpacity onPress={handleManageBookmark}>
+                    <Image
+                      source={require('./images/icon_bookmark.png')}
+                      style={[
+                        styles.iconBookmark,
+                        restaurant.isFavorited.aggregate.count && styles.iconBookmarkSelected,
+                      ]}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.ratingValue}> {restaurant.favorites.aggregate.count}</Text>
                 </View>
                 <Text style={styles.ratingCount}>favorites</Text>
               </View>
@@ -121,7 +169,7 @@ export default function RestaurantDetails({ navigation }) {
         </SafeAreaView>
       </ImageBackground>
       {/* <FeaturePickup /> */}
-      <MenuList placeId={id} />
+      <MenuList placeId={variables.id} />
     </ScrollView>
   )
 }
@@ -200,6 +248,9 @@ const styles = StyleSheet.create({
   iconBookmark: {
     width: 9,
     height: 13,
+  },
+  iconBookmarkSelected: {
+    tintColor: 'orange',
   },
   iconPhoto: {
     width: 12,

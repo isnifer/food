@@ -15,6 +15,8 @@ const authLink = setContext(async (_, { headers }) => {
     console.log("Keychain couldn't be accessed!", error) // eslint-disable-line no-console
   }
 
+  // console.log(`Bearer ${credentials.username}`)
+
   return {
     headers: {
       ...headers,

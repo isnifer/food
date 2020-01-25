@@ -3,10 +3,11 @@ import { View, Text, ImageBackground, StatusBar, StyleSheet } from 'react-native
 import PropTypes from 'prop-types'
 import { useQuery, gql } from '@apollo/client'
 import { get } from 'lodash'
+import { getSyncProfile } from '@/utils/auth/syncProfile'
 import CardsList from '@/components/CardsList'
 
 const RESTAURANTS_BY_CATEGORY = gql`
-  query RestaurantsByCategory($id: Int!) {
+  query RestaurantsByCategory($id: Int!, $userId: String!) {
     category: categories_by_pk(id: $id) {
       name
       photo
@@ -24,6 +25,11 @@ const RESTAURANTS_BY_CATEGORY = gql`
           delivery {
             name
           }
+          isFavorited: favorites_aggregate(where: { user_id: { _eq: $userId } }) {
+            aggregate {
+              count
+            }
+          }
         }
       }
     }
@@ -31,9 +37,10 @@ const RESTAURANTS_BY_CATEGORY = gql`
 `
 
 export default function Restaurants({ navigation }) {
-  const { loading, error, data } = useQuery(RESTAURANTS_BY_CATEGORY, {
-    variables: { id: navigation.getParam('categoryId') },
-  })
+  const userProfile = getSyncProfile()
+  const variables = { id: navigation.getParam('categoryId'), userId: userProfile.id }
+
+  const { loading, error, data, refetch } = useQuery(RESTAURANTS_BY_CATEGORY, { variables })
   const name = get(data, 'category.name', '')
   const places = get(data, 'category.places', [])
   const count = get(data, 'category.stats.aggregate.count', 0)
@@ -51,7 +58,7 @@ export default function Restaurants({ navigation }) {
           <Text style={styles.title}>{name}</Text>
         </View>
       </ImageBackground>
-      <CardsList loading={loading} error={error} items={places} count={count} />
+      <CardsList loading={loading} error={error} items={places} count={count} refetch={refetch} />
     </View>
   )
 }

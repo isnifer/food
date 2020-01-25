@@ -38,7 +38,7 @@ function CardsList(props) {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.listContainer}>
         {props.items.map(({ place }) => (
           <TouchableOpacity key={place.id} onPress={() => handleOpenRestaurant(place.id)}>
-            <CardsListItem item={place} />
+            <CardsListItem item={place} refetch={props.refetch} />
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -51,6 +51,7 @@ CardsList.propTypes = {
   loading: PropTypes.bool.isRequired,
   items: PropTypes.array.isRequired,
   count: PropTypes.number.isRequired,
+  refetch: PropTypes.func.isRequired,
   error: PropTypes.object,
 }
 

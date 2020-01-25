@@ -50,7 +50,7 @@ function SearchResultstList(props) {
         style={styles.listContainer}
         renderItem={({ item }) => (
           <TouchableOpacity key={item.id} onPress={() => handleOpenRestaurant(item.id)}>
-            <CardsListItem item={item} />
+            <CardsListItem item={item} refetch={props.refetch} />
           </TouchableOpacity>
         )}
       />
@@ -62,6 +62,7 @@ SearchResultstList.propTypes = {
   loading: PropTypes.bool.isRequired,
   items: PropTypes.array.isRequired,
   count: PropTypes.number.isRequired,
+  refetch: PropTypes.func.isRequired,
   error: PropTypes.object,
 }
 
@@ -95,6 +96,11 @@ const FILTER_STORES = gql`
           }
         }
       }
+      isFavorited: favorites_aggregate(where: { user_id: { _eq: $userId } }) {
+        aggregate {
+          count
+        }
+      }
     }
     aggregate: places_aggregate(limit: $limit, offset: $offset, order_by: $orderBy, where: $where) {
       aggregate {
@@ -106,13 +112,19 @@ const FILTER_STORES = gql`
 
 export default function SearchResults({ navigation }) {
   const variables = navigation.getParam('variables')
-  const { loading, error, data } = useQuery(FILTER_STORES, { variables })
+  const { loading, error, data, refetch } = useQuery(FILTER_STORES, { variables })
   const results = get(data, 'results', [])
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <SearchResultstList loading={loading} error={error} items={results} count={results.length} />
+      <SearchResultstList
+        loading={loading}
+        error={error}
+        items={results}
+        count={results.length}
+        refetch={refetch}
+      />
     </View>
   )
 }
