@@ -68,7 +68,12 @@ const TabNavigator = createBottomTabNavigator(
 
 const AppStack = createStackNavigator(
   {
-    Tabs: TabNavigator,
+    Tabs: {
+      screen: TabNavigator,
+      navigationOptions: ({ navigation }) => ({
+        title: navigation.state.routes[navigation.state.index].routeName,
+      }),
+    },
     Menu,
     Checkout,
     Categories,

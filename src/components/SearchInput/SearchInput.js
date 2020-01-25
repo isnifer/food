@@ -75,7 +75,9 @@ function SearchInput({ query, navigation }) {
   }
 
   function handleSubmitEditing() {
-    navigation.navigate('SearchResults', { query, searchQuery })
+    navigation.navigate('SearchResults', {
+      variables: { where: { name: { _ilike: `%${searchQuery}%` } } },
+    })
   }
 
   const resultsVisible = !!searchQuery && (loading || !!data)

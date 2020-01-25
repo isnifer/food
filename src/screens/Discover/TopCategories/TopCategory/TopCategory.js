@@ -11,7 +11,9 @@ export default function Category({ category: { name, photo, ...category }, isFir
       <View style={styles.imageContainer}>
         <Image source={{ uri: photo }} style={styles.image} />
       </View>
-      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.name} numberOfLines={1}>
+        {name}
+      </Text>
       <Text style={styles.subtitle}>{places} places</Text>
     </TouchableOpacity>
   )
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   name: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: '#26315F',
     marginTop: 9,

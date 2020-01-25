@@ -25,8 +25,12 @@ function TopPlace({ item, isFirst, navigation }) {
   return (
     <TouchableOpacity activeOpacity={0.8} style={stylesContainer} onPress={handlePressStore}>
       <Image source={{ uri: photo }} style={styles.image} />
-      <Text style={styles.name}>{name}</Text>
-      <Text style={styles.address}>{address}</Text>
+      <Text style={styles.name} numberOfLines={1}>
+        {name}
+      </Text>
+      <Text style={styles.address} numberOfLines={1}>
+        {address}
+      </Text>
       <View style={styles.infoContainer}>
         <Rating rating={rating} count={aggregate.count} />
         {delivery && <Badge title={delivery.name} />}

@@ -1,54 +1,128 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { get, find, merge } from 'lodash'
+import { useQuery, gql } from '@apollo/client'
+import { withNavigation } from 'react-navigation'
 import Modal from 'react-native-modal'
+import passFilterValue from '@/utils/passFilterValue'
 import FilterList from './FilterList'
 
-const cuisines = [
-  { id: 1, name: 'American' },
-  { id: 2, name: 'Turkish' },
-  { id: 3, name: 'Asia' },
-  { id: 4, name: 'Fast Food' },
-  { id: 5, name: 'Pizza' },
-  { id: 6, name: 'Desserds' },
-  { id: 7, name: 'Mexican' },
+const TOP_CATEGORIES = gql`
+  {
+    categories(order_by: { places_aggregate: { count: desc } }, limit: 6) {
+      id
+      name
+      photo
+      places_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
+
+const orderBy = [
+  {
+    id: 1,
+    name: 'Top Rated',
+    variables: {
+      orderBy: { ratings_aggregate: { avg: { rating: 'asc' } } },
+    },
+  },
+  {
+    id: 3,
+    name: 'Cost High to Low',
+    variables: {
+      orderBy: { price: { value: 'desc' } },
+    },
+  },
+  {
+    id: 4,
+    name: 'Cost Low to High',
+    variables: {
+      orderBy: { price: { value: 'asc' } },
+    },
+  },
 ]
 
-const sortBy = [
-  { id: 1, name: 'Top Rated' },
-  { id: 2, name: 'Nearest Me' },
-  { id: 3, name: 'Cost High to Low' },
-  { id: 4, name: 'Cost Low to High' },
-]
+const LOAD_DELIVERIES = gql`
+  query {
+    deliveries: delivery_types(order_by: { price: asc }) {
+      id
+      name
+    }
+  }
+`
 
-const filters = [
-  { id: 1, name: 'Open Now' },
-  { id: 3, name: 'Credit Card' },
-  { id: 4, name: 'Free Delivery' },
-]
+const LOAD_PRICES = gql`
+  query {
+    prices {
+      id
+      name
+    }
+  }
+`
 
-const prices = [
-  { id: 1, name: 'Cheap Eats' },
-  { id: 2, name: 'Mid-range' },
-  { id: 3, name: 'Fine Dining' },
-]
+function Filters({ isVisible, toggle, navigation }) {
+  const categories = useQuery(TOP_CATEGORIES)
+  const deliveries = useQuery(LOAD_DELIVERIES)
+  const prices = useQuery(LOAD_PRICES)
 
-export default function Filters(props) {
-  const [selectedCuisines, setCuisine] = useState({})
+  const [selectedCategories, setCategories] = useState({})
   const [selectedSort, setSort] = useState('')
-  const [selectedFilters, setFilters] = useState({})
+  const [selectedDeliveries, setDeliveries] = useState({})
   const [selectedPrices, setPrices] = useState({})
 
   function handleResetFilters() {
-    props.toggle()
+    toggle()
+
+    navigation.navigate('Discover')
   }
 
   function handleApplyFilters() {
-    props.toggle()
+    toggle()
+
+    let filters = {}
+
+    if (passFilterValue(selectedCategories)) {
+      filters = merge({}, filters, {
+        where: {
+          categories: {
+            _or: Object.keys(selectedCategories).map(id => ({
+              category_id: { _eq: Number(id) },
+            })),
+          },
+        },
+      })
+    }
+
+    if (passFilterValue(selectedSort)) {
+      filters = merge({}, filters, get(find(orderBy, { id: selectedSort }), 'variables'))
+    }
+
+    if (passFilterValue(selectedDeliveries)) {
+      filters = merge({}, filters, {
+        where: {
+          _or: Object.keys(selectedDeliveries).map(id => ({ delivery_id: { _eq: Number(id) } })),
+        },
+      })
+    }
+
+    if (passFilterValue(selectedPrices)) {
+      filters = merge({}, filters, {
+        where: { _or: Object.keys(selectedPrices).map(id => ({ price_id: { _eq: Number(id) } })) },
+      })
+    }
+
+    if (passFilterValue(filters)) {
+      navigation.navigate('SearchResults', { variables: filters })
+    }
   }
 
   return (
-    <Modal style={styles.modal} isVisible={props.isVisible} onBackButtonPress={props.toggle}>
+    <Modal style={styles.modal} isVisible={isVisible} onBackButtonPress={toggle}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView style={styles.container}>
           <View style={styles.header}>
@@ -62,29 +136,40 @@ export default function Filters(props) {
           </View>
           <View style={styles.filterGroup}>
             <Text style={styles.filterTitle}>CUISINES</Text>
-            <FilterList
-              type="tags"
-              items={cuisines}
-              selected={selectedCuisines}
-              onPress={setCuisine}
-            />
+            {categories.data && (
+              <FilterList
+                type="tags"
+                items={categories.data.categories}
+                selected={selectedCategories}
+                onPress={setCategories}
+              />
+            )}
           </View>
           <View style={styles.filterGroup}>
             <Text style={styles.filterTitle}>SORT BY</Text>
-            <FilterList type="radio" items={sortBy} selected={selectedSort} onPress={setSort} />
+            <FilterList type="radio" items={orderBy} selected={selectedSort} onPress={setSort} />
           </View>
           <View style={styles.filterGroup}>
-            <Text style={styles.filterTitle}>FILTER</Text>
-            <FilterList
-              type="checkbox"
-              items={filters}
-              selected={selectedFilters}
-              onPress={setFilters}
-            />
+            <Text style={styles.filterTitle}>DELIVERY</Text>
+            {deliveries.data && (
+              <FilterList
+                type="checkbox"
+                items={deliveries.data.deliveries}
+                selected={selectedDeliveries}
+                onPress={setDeliveries}
+              />
+            )}
           </View>
           <View style={styles.filterGroup}>
             <Text style={styles.filterTitle}>PRICE</Text>
-            <FilterList type="tags" items={prices} selected={selectedPrices} onPress={setPrices} />
+            {prices.data && (
+              <FilterList
+                type="tags"
+                items={prices.data.prices}
+                selected={selectedPrices}
+                onPress={setPrices}
+              />
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -95,6 +180,7 @@ export default function Filters(props) {
 Filters.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
+  navigation: PropTypes.object.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -143,3 +229,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 })
+
+export default withNavigation(Filters)

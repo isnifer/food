@@ -20,6 +20,22 @@ const SEARCH_RESTAURANTS = gql`
     results: places(where: { name: { _ilike: $query } }) {
       id
       name
+      photo
+      address
+      delivery {
+        name
+      }
+      price {
+        name
+      }
+      rating: ratings_aggregate {
+        aggregate {
+          count
+          avg {
+            rating
+          }
+        }
+      }
     }
   }
 `
@@ -84,6 +100,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   topCategories: {
-    marginTop: 16,
+    marginTop: 32,
   },
 })
