@@ -41,14 +41,14 @@ export default function Cart({ navigation }) {
   const [updateProductQuantity] = useMutation(UPDATE_PRODUCT_QUANTITY)
   const [temporaryQuantity, setTemporaryQuantity] = useState({})
 
-  async function performQuantityUpdate(quantityParams) {
-    for (const [productId, quantity] of Object.entries(quantityParams)) {
-      await updateProductQuantity({ variables: { productId: Number(productId), quantity } })
-    }
-
-    await refetch()
-
-    setTemporaryQuantity({})
+  function performQuantityUpdate(quantityParams) {
+    return Promise.all(
+      Object.entries(quantityParams).map(([productId, quantity]) =>
+        updateProductQuantity({ variables: { productId: Number(productId), quantity } })
+      )
+    )
+      .then(() => refetch())
+      .then(() => setTemporaryQuantity({}))
   }
 
   const debouncedQuantityUpdate = useCallback(debounce(performQuantityUpdate, 1000), [])
