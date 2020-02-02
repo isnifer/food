@@ -14,7 +14,7 @@ import SearchResults from './SearchResults'
 
 // TabNavigator
 import Discover from './Discover'
-import Order from './Order'
+import Cart from './Cart'
 import Favorites from './Favorites'
 import Profile from './Profile'
 
@@ -34,7 +34,7 @@ const AuthStack = createStackNavigator(
 
 const icons = {
   Discover: require('./Discover/images/icon_explore.png'),
-  Order: require('./Discover/images/icon_order.png'),
+  Cart: require('./Discover/images/icon_order.png'),
   Favorites: require('./Discover/images/icon_favorites.png'),
   Profile: require('./Discover/images/icon_profile.png'),
 }
@@ -42,16 +42,13 @@ const icons = {
 const TabNavigator = createBottomTabNavigator(
   {
     Discover,
-    Order,
+    Cart,
     Favorites,
     Profile,
   },
   {
     initialRouteName: 'Discover',
-    order: ['Discover', 'Order', 'Favorites', 'Profile'],
-    navigationOptions: {
-      headerShown: false,
-    },
+    order: ['Discover', 'Cart', 'Favorites', 'Profile'],
     defaultNavigationOptions: ({ navigation: { state } }) => ({
       // eslint-disable-next-line
       tabBarIcon: ({ focused, tintColor }) => (
@@ -69,9 +66,14 @@ const AppStack = createStackNavigator(
   {
     Tabs: {
       screen: TabNavigator,
-      navigationOptions: ({ navigation }) => ({
-        title: navigation.state.routes[navigation.state.index].routeName,
-      }),
+      navigationOptions: ({ navigation }) => {
+        const { routeName } = navigation.state.routes[navigation.state.index]
+
+        return {
+          title: routeName,
+          headerShown: routeName !== 'Discover' && routeName !== 'Profile',
+        }
+      },
     },
     Checkout,
     Categories,
