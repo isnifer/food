@@ -12,7 +12,9 @@ export default function MenuListProduct({ item, isAdded, handleAdd }) {
   }
 
   function handlePressMenuItem() {
-    setPhotoVisibility(state => !state)
+    if (photo) {
+      setPhotoVisibility(state => !state)
+    }
   }
 
   return (
@@ -30,7 +32,7 @@ export default function MenuListProduct({ item, isAdded, handleAdd }) {
           />
         </TouchableOpacity>
       </View>
-      {photoVisible && (
+      {Boolean(photo) && photoVisible && (
         <View style={styles.imageContainer}>
           <Image source={{ uri: photo }} style={styles.image} />
         </View>

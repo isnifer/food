@@ -92,7 +92,7 @@ export default function RestaurantDetails({ navigation }) {
     return (
       <View>
         <StatusBar barStyle="light-content" />
-        <ActivityIndicator />
+        <Text>{JSON.stringify(error, null, 2)}</Text>
       </View>
     )
   }

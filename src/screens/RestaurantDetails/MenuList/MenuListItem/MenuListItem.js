@@ -1,14 +1,45 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
+import { gql, useMutation } from '@apollo/client'
 import MenuListProduct from './MenuListProduct'
+
+const ADD_PRODUCT_TO_CART = gql`
+  mutation AddProductToCart($productId: Int!, $quantity: Int!) {
+    insert_carts(objects: { product_id: $productId, quantity: $quantity }) {
+      returning {
+        product_id
+        quantity
+      }
+    }
+  }
+`
+
+const REMOVE_PRODUCT_FROM_CART = gql`
+  mutation DeleteProductFromCart($productId: Int!) {
+    delete_carts(where: { product_id: { _eq: $productId } }) {
+      returning {
+        product_id
+      }
+    }
+  }
+`
 
 export default function MenuListItem({ item: { name, products } }) {
   const [addedProducts, setAddedProducts] = useState({})
   const [isProductsVisible, setProductsVisibility] = useState(false)
 
+  const [addProductToCart, { data }] = useMutation(ADD_PRODUCT_TO_CART)
+  const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_CART)
+
   function handleAddProduct(productId, value) {
     setAddedProducts(Object.assign({}, addedProducts, { [productId]: value }))
+
+    if (value) {
+      addProductToCart({ variables: { productId, quantity: 1 } })
+    } else {
+      removeProductFromCart({ variables: { productId } })
+    }
   }
 
   function handlePressMenuItem() {

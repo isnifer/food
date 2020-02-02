@@ -6,7 +6,6 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 
 // AppStack
-import Menu from './Menu'
 import Checkout from './Checkout'
 import Categories from './Categories'
 import Restaurants from './Restaurants'
@@ -74,7 +73,6 @@ const AppStack = createStackNavigator(
         title: navigation.state.routes[navigation.state.index].routeName,
       }),
     },
-    Menu,
     Checkout,
     Categories,
     Restaurants,
@@ -84,12 +82,12 @@ const AppStack = createStackNavigator(
   { initialRouteName: 'Tabs' }
 )
 
-const StackNavigator = createSwitchNavigator(
+const SwitchNavigator = createSwitchNavigator(
   {
-    App: AppStack,
     Auth: AuthStack,
+    App: AppStack,
   },
   { initialRouteName: 'Auth' }
 )
 
-export default createAppContainer(StackNavigator)
+export default createAppContainer(SwitchNavigator)
